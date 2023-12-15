@@ -1,10 +1,15 @@
 ORG 0
-
-jmp 0x7c0:start
 [BITS 16]
 
-start:
+;Das Label "_start" braucht es wegen dem BIOS Parameter Block
+_start:
+    jmp short start
+    nop
 
+times 33 db 0
+start:
+    jmp 0x7c0:step2 ;Hier wird das CS register mit 0x7c0 ersetzt und zum Label "step2" gesprungen
+step2:
     ;Hier werden nun die Segment register manuell gesetzt, dass sie nicht random vom BIOS gesetzt werden. 
     ;Das SS muss anders gesetzt werden als die restlichen.
     cli ;Clear Interrupts
