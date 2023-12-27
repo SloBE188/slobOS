@@ -7,7 +7,7 @@ git commit -m "message"
 git push origin main
 
 
-target remote | qemu-system-x86_64 -hda ./boot.bin -S -gdb stdio
+target remote | qemu-system-x86_64 -hda ./bin/boot.bin -S -gdb stdio
 layout asm
 
 
