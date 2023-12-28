@@ -23,3 +23,5 @@ _start:
     out 0x92, al
 
     jmp $
+
+times 512- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
