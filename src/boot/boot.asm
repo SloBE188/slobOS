@@ -35,7 +35,8 @@ step2:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    jmp CODE_SEG:load32
+    jmp CODE_SEG:load32     ;In diese Adresse wird nun der Kernel geladen.
+    jmp $
 
 ;GDT
 gdt_start:
@@ -67,24 +68,77 @@ gdt_descriptor:
     dw gdt_end - gdt_start -1
     dd gdt_start
 
-
-;Der Kernel läuft nun in einem 32bit mode (Protected Mode), wir können das BIOS nicht mehr nutzen.
 [BITS 32]
-load32:         
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov ebp, 0x00200000
-    mov esp, ebp
+load32:
+    mov eax, 1          ;Der Sektor im Speicher, wovon wir den kernel laden möchten (0 ist der Bootsektor)
+    mov ecx, 100        ;Totale Nummer von Sektoren, welche wir laden wollen.
+    mov edi, 0x0100000  ;Adresse, wohin wir die Sektoren laden wollen.
+    call ata_lba_read
+    jmp CODE_SEG:0x0100000
 
-    ;Enable A20 Line
-    in al, 0x92
-    or al, 2
-    out 0x92, al
-jmp $
+ata_lba_read:
+    mov ebx, eax        ;Backup the LBA
+    ;Send the hightes 8 bits of the lba to the hard disk controller (on the mainboard)
+    shr eax, 24
+    or eax, 0xE0        ;Select the master drive
+    mov dx, 0x1F6
+    out dx, al
+    ;Finished sending the hightest 8 bits of the lba
+
+    ;Send the total sectors to read
+    mov eax, ecx
+    mov dx, 0x1F2
+    out dx, al
+    ;Finisehd sending the total sectors to read
+
+
+    ;Send more bits of the lba
+    mov eax, ebx        ;Restore the backup lba
+    mov dx, 0x1F3
+    out dx, al
+    ;Finished sending more bits of the lba
+
+
+    ;Send more bits of the lba
+    mov dx, 0x1F4
+    mov eax, ebx        ;Restore the backup lba
+    shr eax, 8
+    out dx, al
+    ;Finished sending more bits of the lba
+
+    ;Send upper 16 bits of the lba
+    mov dx, 0x1F5
+    mov eax, ebx        ;Restore the backup lba
+    shr eax, 16
+    out dx, al
+    ;Finished sending upper 16 bits of the lba
+
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al
+
+    ;Read all sectors into memory
+.next_sector:
+    push ecx
+
+    ;Checking if we need to read
+.try_again:
+    mov dx, 0x1f7
+    in al, dx
+    test al, 8
+    jz .try_again
+
+;Need to read 256 words at a time
+    mov ecx, 256    ;256 words = 512 Bytes (1 sector)
+    mov dx, 0x1F0
+    rep insw        ;Diese insw wird nun 256x ausgeführt (wegen ecx=256).
+    pop ecx
+    loop .next_sector   ;Es geht zum nächsten sector und dekrementiert immer um 1, bis ich von sector 100 bis auf 0 bin (alles sectors gelesen)
+
+    ;End of reading sectors into memory
+    ret
+
+
 
 times 510- ($ - $$) db 0
 dw 0xAA55       ;boot signature

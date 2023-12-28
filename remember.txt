@@ -7,8 +7,10 @@ git commit -m "message"
 git push origin main
 
 
-target remote | qemu-system-x86_64 -hda ./bin/boot.bin -S -gdb stdio
+target remote | qemu-system-x86_64 -S -gdb stdio -hda ./os.bin
 layout asm
 
 
 new system siuu
+
+#Das bedeutet, das under Kernel nach genau einem mb (1024) geladen wird. Das wäre adresse 100000(HEX). Also das ist dann das ORG.
