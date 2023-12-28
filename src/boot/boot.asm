@@ -84,7 +84,7 @@ ata_lba_read:
     mov dx, 0x1F6
     out dx, al
     ;Finished sending the hightest 8 bits of the lba
-
+ 
     ;Send the total sectors to read
     mov eax, ecx
     mov dx, 0x1F2
