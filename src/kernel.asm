@@ -3,6 +3,8 @@
 
 
 global _start
+global problem
+
 extern kernel_main
 
 CODE_SEG equ 0x08   ;Offsetwert
@@ -25,5 +27,9 @@ _start:
 
     call kernel_main
     jmp $
+
+;Example interrupt (Divide by zero error)
+problem:
+    int 0
 
 times 512- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
