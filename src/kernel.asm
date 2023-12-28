@@ -3,7 +3,7 @@
 
 
 global _start
-
+extern kernel_main
 
 CODE_SEG equ 0x08   ;Offsetwert
 DATA_SEG equ 0x10   ;Offsetwert
@@ -22,6 +22,8 @@ _start:
     or al, 2
     out 0x92, al
 
+
+    call kernel_main
     jmp $
 
 times 512- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
