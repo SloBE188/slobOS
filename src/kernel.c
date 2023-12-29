@@ -89,11 +89,26 @@ void kernel_main()
     //initialize the heap
     kheap_init();
 
-    //initialize the IDT
+    //initialize the IDT  
     idt_init();
 
-    //problem();
+    //Enable Interrupts
+    enable_interrupts();
 
+
+    //TESTING
+    //TESTING
+    //TESTING
+    //problem();
     //Output oxff here
     //outb(0x60, 0xff);
+    /*    void* ptr = kmalloc(50);
+    void* ptr2 = kmalloc(5000);
+    void* ptr3 = kmalloc(5600);
+    kfree(ptr);
+    void* ptr4 = kmalloc(50);
+    if (ptr || ptr2 || ptr3 || ptr4)
+    {
+    }*/
+    
 }
