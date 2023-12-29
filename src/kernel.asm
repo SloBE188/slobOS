@@ -29,7 +29,7 @@ _start:
     jmp $
 
 ;Example interrupt (Divide by zero error)
-problem:
-    int 0
+;problem:
+;   int 0
 
 times 512- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
