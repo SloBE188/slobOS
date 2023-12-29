@@ -92,5 +92,5 @@ void kernel_main()
     //problem();
 
     //Output oxff here
-    outb(0x60, 0xff);
+    //outb(0x60, 0xff);
 }

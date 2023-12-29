@@ -1,11 +1,31 @@
 #include "idt.h"
 #include "config.h"
 #include "memory/memory.h"
-
-extern void idt_load (struct idtr_desc* ptr);
+#include "io/io.h"
 
 struct idt_desc idt_descriptors[CENTOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
+
+extern void idt_load (struct idtr_desc* ptr);
+extern void int21h();
+extern void no_interrupt();
+
+
+//This handler wil print "Keyboard pressed" whenever a krey gets pressed
+void int21h_handler()
+{
+
+    print("Keyboard pressed\n");
+    /*Send this to the PIC to acknowledge we have handled the interrupt*/
+    outb(0x20,0x20);
+}
+/*This no interrupt handler will bne used when their is no
+associated interrupt routine for an interrupt number*/
+void no_interrupt_handler()
+{
+    /*Send this to the PIC to acknowledge we have handled the interrupt*/
+    outb(0x20,0x20); 
+}
 
 //Divide by zero interrupt
 void idt_zero()
@@ -34,8 +54,22 @@ void idt_init()
     uint32_t to stoire it in the descriptor*/
     idtr_descriptor.base = (uint32_t) idt_descriptors;
 
+
+    //This loop sets all interrupts to point to the no interrupt routine
+    for (int i = 0; i < CENTOS_TOTAL_INTERRUPTS; i++)
+    {
+        idt_set(i, no_interrupt);
+    }
+    
+
     //Divide by zero interrupt (idt_zero) gets maped
     idt_set(0, idt_zero);
+
+    /*Here we set out keyboard interrupt 0x21 to point to our int21h
+    handler which is defined in asm. The int21h handler eventually
+    calls the int21h_handler C function defined above here.
+    int21h is in the src/idt/idt.asm file*/
+    idt_set(0x21, int21h);
 
     //Load the interrupt descriptor table
     idt_load(&idtr_descriptor);
