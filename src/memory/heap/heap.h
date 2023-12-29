@@ -26,7 +26,7 @@ struct heap
     struct heap_table* table;
 
     //Start address of the heap data pool
-    viod* saddr;
+    void* saddr;
     
 };
 

@@ -6,7 +6,7 @@
 
 /*Validates the heap table.
 ptr: The pointer to the start of the heap.
-end: The pointer to the end of the heap
+end: The pointer to the end of the heap.
 This function ensures that the total number of blocks calculated
 from the heap size is the same as the total number of blocks in the heap table.
 Returns 0 if the heap table is valid, otherwise returns -EINVARG.*/
@@ -27,7 +27,7 @@ out:
 }
 
 /*Checks if a pointer is aligned to the heap block size.
-ptr: The pointert to be checked.
+ptr: The pointer to be checked.
 The function checks if the pointer is aligned to CENTOS_HEAP_BLOCK_SIZE.
 Returns true if the pointer is aligned, false otherwise.
 We need this function to prevent non 4096 byte aligned addresses being used as you aware out implementation
@@ -72,13 +72,13 @@ out:
 }
 static uint32_t heap_align_value_to_upper(uint32_t val)
 {
-    if ((val % PEACHOS_HEAP_BLOCK_SIZE) == 0)
+    if ((val % CENTOS_HEAP_BLOCK_SIZE) == 0)
     {
         return val;
     }
 
-    val = (val - ( val % PEACHOS_HEAP_BLOCK_SIZE));
-    val += PEACHOS_HEAP_BLOCK_SIZE;
+    val = (val - ( val % CENTOS_HEAP_BLOCK_SIZE));
+    val += CENTOS_HEAP_BLOCK_SIZE;
     return val;
 }
 
@@ -143,4 +143,111 @@ This gives us the absolute address for the malloced memory which we can then pas
 void* heap_block_to_address(struct heap* heap, int block)
 {
     return heap->saddr + (block * CENTOS_HEAP_BLOCK_SIZE);
+}
+
+/*This functiuon marks the blocks allocated as taken so future malloc calls do not overricde the memory*/
+void heap_mark_blocks_taken(struct heap* heap, int start_block, int total_blocks)
+{
+    int end_block = (start_block + total_blocks)-1;
+
+    HEAP_BLOCK_TABLE_ENTRY entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN | HEAP_BLOCK_IS_FIRST;
+    if (total_blocks > 1)
+    {
+        entry |= HEAP_BLOCK_HAS_NEXT;
+    }
+
+    for (int i = start_block; i <= end_block; i++)
+    {
+        heap->table->entries[i] = entry;
+        entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN;
+        if (i != end_block -1)
+        {
+            entry |= HEAP_BLOCK_HAS_NEXT;
+        }
+    }
+}
+
+/*Allocates a contiguous sequence of blocks in the heap.
+This function attempts to allocate a number of blocks specified by total_blocks in the heap.
+It first identifies a suitable starting block for the allocation unsing the heap_get_start_block
+function. If nu suitable block is found, it returns NULL.
+After a suitable starting block is found, it converts the block number to a memory address
+using heap_block_to_address. Then it marks the allocated blocks as taken using the heap_mark_blocks_taken
+function.
+@param heap: The heap in which blocks are to be allocated.
+@param total_blocks: The total number of contiguous blocks to allocate.
+@return: The starting address of the allocated vblocks, or NULL if allocation fails.*/
+
+void* heap_malloc_blocks(struct heap* heap, uint32_t total_blocks)
+{
+    void* address = 0;
+
+    int start_block = heap_get_start_block(heap, total_blocks);
+    if (start_block < 0)
+    {
+        goto out;
+    }
+
+    address = heap_block_to_address(heap, start_block);
+
+    // Mark the blocks as taken
+    heap_mark_blocks_taken(heap, start_block, total_blocks);
+
+out:
+    return address;
+}
+
+
+/*Marks a sequence of blocks in the heap as free.
+This function traverses the heaps block table starting from the specified block, marking
+each block it encounters as free. The traversal stops when it reaches a block that is not
+marked with HEAP_BLOCK_HAS_NEXT, indicating the end of a sequence of allocated blocks.
+Thjis function is typically used to deallocate a sequence of blocks that were previosly
+allocated with heap_malloc_blocks.
+@param heap: The heap contaioning the blocks to be freed.
+@param: starting_block: The first block in the sequence to be freed.*/
+void heap_mark_blocks_free(struct heap* heap, int starting_block)
+{
+    struct heap_table* table = heap->table;
+    for (int i = starting_block; i < (int)table->total; i++)
+    {
+        HEAP_BLOCK_TABLE_ENTRY entry = table->entries[i];
+        table->entries[i] = HEAP_BLOCK_TABLE_ENTRY_FREE;
+        if (!(entry & HEAP_BLOCK_HAS_NEXT))
+        {
+            break;
+        }
+    }
+}
+
+/*This function takes an address and converts it back into a block number in out table.*/
+int heap_address_to_block(struct heap* heap, void* address)
+{
+    return ((int)(address - heap->saddr)) / CENTOS_HEAP_BLOCK_SIZE;
+}
+
+/*Allocates a block of memory in the heap.
+This function allocates a block of memory of a specified size in the heap.
+It first aligns the requested size to the upper nearest multiple of the heap block size.
+Then, it calculates the total number of blocks required to satisfy the aligned size.
+Finally, it attempts to allocate this number of blocks in the heap using heap_malloc_blocks.
+@param heap: The heap in which the momory is to be allocated
+@param size: The size of the memory block to allocate.
+@return: The starting address of the allocated memory block, or NULL if allocation fails.*/
+void* heap_malloc(struct heap* heap, size_t size)
+{
+    size_t aligned_size = heap_align_value_to_upper(size);
+    uint32_t total_blocks = aligned_size / CENTOS_HEAP_BLOCK_SIZE;
+    return heap_malloc_blocks(heap, total_blocks);
+}
+
+/*Frees a block of memory in the heap.
+This function frees a block of memory in the heap that was previously allocated with heap_malloc.
+It calculates the starting block number corresponding to the memory address, and then marks the
+sequence of blocks starting from this block as free using heap_mark_blocks_free.
+@param heap: The heap containing the memory block to be freed.
+@param ptr: The starting address of the memory block to free.*/
+void* heap_free(struct heap* heap, void* ptr)
+{
+    heap_mark_blocks_free(heap, heap_address_to_block(heap, ptr));
 }
