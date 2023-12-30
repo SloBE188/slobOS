@@ -5,6 +5,7 @@
 #include "io/io.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
+#include "disk/disk.h"
 
 uint16_t *video_mem = 0;
 uint16_t terminal_row = 0;
@@ -102,18 +103,25 @@ void kernel_main()
     //Switch to kernel paging chunk so that the processor follows the kernel paging directory
     paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
 
+    /*PAGING TESTING
     char* ptr = kzalloc(4096);
     paging_set(paging_4gb_chunk_get_directory(kernel_chunk), (void*)0x1000, (uint32_t)ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE);
-
+*/
+    
     //Enable paging
     enable_paging();
 
+    char buf[512];
+    disk_read_sector(0, 1, buf);
+
+    /*PAGING TESTING
     char* ptr2 = (char*) 0x1000;
     ptr2[0] = 'A';
     ptr2[1] = 'B';
     print(ptr2);
 
     print(ptr);
+    */
 
     //Enable Interrupts
     enable_interrupts();
@@ -125,13 +133,18 @@ void kernel_main()
     //problem();
     //Output oxff here
     //outb(0x60, 0xff);
-    /*    void* ptr = kmalloc(50);
+
+
+    /*    
+    HEAP TESTING
+    void* ptr = kmalloc(50);
     void* ptr2 = kmalloc(5000);
     void* ptr3 = kmalloc(5600);
     kfree(ptr);
     void* ptr4 = kmalloc(50);
     if (ptr || ptr2 || ptr3 || ptr4)
     {
-    }*/
+    }
+    */
     
 }
