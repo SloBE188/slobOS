@@ -92,6 +92,9 @@ void kernel_main()
     //initialize the heap
     kheap_init();
 
+    //Search and initialize the disks
+    disk_search_and_init();
+
     //initialize the IDT  
     idt_init();
 
@@ -111,8 +114,13 @@ void kernel_main()
     //Enable paging
     enable_paging();
 
+    /*TESTING DISK
     char buf[512];
     disk_read_sector(0, 1, buf);
+    Da ich inzwischen den diskdriver angepasst habe (alles asgelagert)
+    kann man auch so entwas von der disk lesen:
+    disk_read_block(disk_get(0), 20, 4, buf) etc.
+    */
 
     /*PAGING TESTING
     char* ptr2 = (char*) 0x1000;
