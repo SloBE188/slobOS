@@ -1,36 +1,29 @@
 #include "paging.h"
 #include "memory/heap/kheap.h"
 #include "status.h"
-
 void paging_load_directory(uint32_t* directory);
 
-static uint32_t current_directory = 0;
+static uint32_t* current_directory = 0;
 struct paging_4gb_chunk* paging_new_4gb(uint8_t flags)
 {
     //Creates the memory for the page directory.
-    uint32_t* directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY);
+    uint32_t* directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
     int offset = 0;
-    for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY; i++)
+    for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE; i++)
     {
         //Creates the memory for all the page tables of the directorys created above.
-        uint32_t* page_table_entry = kzalloc(sizeof(uint32_t)* PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY);
-        for (int b = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY; b++)
+        uint32_t* entry = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
+        for (int b = 0; b < PAGING_TOTAL_ENTRIES_PER_TABLE; b++)
         {
-            page_table_entry[b] = (offset + (b * PAGING_PAGE_SIZE)) | flags;
+            entry[b] = (offset + (b * PAGING_PAGE_SIZE)) | flags;
         }
-        offset += (PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY * PAGING_PAGE_SIZE);
-        //Each directory entry has a pointer to a single page table.
-        directory[i] = (uint32_t)page_table_entry | flags | PAGING_IS_WRITEABLE;
+        offset += (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE);
+        directory[i] = (uint32_t)entry | flags | PAGING_IS_WRITEABLE;
     }
 
-
     struct paging_4gb_chunk* chunk_4gb = kzalloc(sizeof(struct paging_4gb_chunk));
-    {
-        chunk_4gb->directory_entry = directory;
-        return chunk_4gb;
-    };
-    
-    
+    chunk_4gb->directory_entry = directory;
+    return chunk_4gb;
 }
 
 void paging_switch(uint32_t* directory)
@@ -38,6 +31,7 @@ void paging_switch(uint32_t* directory)
     paging_load_directory(directory);
     current_directory = directory;
 }
+
 uint32_t* paging_4gb_chunk_get_directory(struct paging_4gb_chunk* chunk)
 {
     return chunk->directory_entry;
@@ -45,23 +39,21 @@ uint32_t* paging_4gb_chunk_get_directory(struct paging_4gb_chunk* chunk)
 
 bool paging_is_aligned(void* addr)
 {
-    return ((uint32_t) addr % PAGING_PAGE_SIZE) == 0;
-}
+    return ((uint32_t)addr % PAGING_PAGE_SIZE) == 0;
+} 
 
 int paging_get_indexes(void* virtual_address, uint32_t* directory_index_out, uint32_t* table_index_out)
 {
-
     int res = 0;
     if (!paging_is_aligned(virtual_address))
     {
         res = -EINVARG;
         goto out;
-    }
+    }  
 
-    *directory_index_out = ((uint32_t)virtual_address / (PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY * PAGING_PAGE_SIZE));
-    *table_index_out = ((uint32_t) virtual_address % (PAGING_TOTAL_ENTRIES_PER_TABLE_AND_DIRECTORY * PAGING_PAGE_SIZE) / PAGING_PAGE_SIZE);
-
-    out:
+    *directory_index_out = ((uint32_t)virtual_address / (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE));
+    *table_index_out = ((uint32_t) virtual_address % (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE) / PAGING_PAGE_SIZE);
+out:
     return res;
 }
 
@@ -80,8 +72,8 @@ int paging_set(uint32_t* directory, void* virt, uint32_t val)
         return res;
     }
 
-    uint32_t page_table_entry = directory[directory_index];
-    uint32_t* table = (uint32_t*)(page_table_entry & 0xfffff000);
+    uint32_t entry = directory[directory_index];
+    uint32_t* table = (uint32_t*)(entry & 0xfffff000);
     table[table_index] = val;
 
     return 0;

@@ -95,11 +95,11 @@ void kernel_main()
     idt_init();
 
 
-    //Setting up paging
+    //Setting up paging, mapping the entire 4GB of memory linearly to the physical adresses.
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
 
 
-    //Switch to kernel paging chunk
+    //Switch to kernel paging chunk so that the processor follows the kernel paging directory
     paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
 
     char* ptr = kzalloc(4096);
