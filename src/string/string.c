@@ -3,17 +3,14 @@
 //This function will count the number of characters in a string
 int strlen(const char* ptr)
 {
-
     int i = 0;
-
-    while (*ptr != 0)
+    while(*ptr != 0)
     {
         i++;
         ptr += 1;
     }
-    return i;
-    
 
+    return i;
 }
 
 
@@ -21,16 +18,13 @@ int strlen(const char* ptr)
 int strnlen(const char* ptr, int max)
 {
     int i = 0;
-    for (int i = 0; i < max; i++)
+    for (i = 0; i < max; i++)
     {
         if (ptr[i] == 0)
-        {
             break;
-        }
-        
     }
+
     return i;
-    
 }
 
 
@@ -45,5 +39,4 @@ int tonumericdigit(char c)
 {
     return c - 48;
 }
-
 

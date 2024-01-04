@@ -7,6 +7,7 @@
 #include "memory/paging/paging.h"
 #include "disk/disk.h"
 #include "string/string.h"
+#include "fs/pparser.h"
 
 uint16_t *video_mem = 0;
 uint16_t terminal_row = 0;
@@ -123,6 +124,15 @@ void kernel_main()
 
     //Enable Interrupts
     enable_interrupts();
+    struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+
+    if(root_path)
+    {
+
+
+    }
+
+    
 
 
     //TESTING
