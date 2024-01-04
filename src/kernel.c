@@ -8,6 +8,7 @@
 #include "disk/disk.h"
 #include "string/string.h"
 #include "fs/pparser.h"
+#include "disk/streamer.h"
 
 uint16_t *video_mem = 0;
 uint16_t terminal_row = 0;
@@ -124,13 +125,24 @@ void kernel_main()
 
     //Enable Interrupts
     enable_interrupts();
-    struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+
+    /*PATH PARSER TESTING
+        struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
 
     if(root_path)
     {
 
 
-    }
+    }*/
+
+    //Create a new diskstreamer that reads from disk zero
+    struct disk_stream* stream = diskstreamer_new(0);
+    //Seek just past our bootloader
+    diskstreamer_seek(stream, 0x201);
+    unsigned char c = 0;
+    //Read one byte
+    diskstreamer_read(stream, &c, 1);
+    while(1){}
 
     
 
