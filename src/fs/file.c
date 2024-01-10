@@ -4,6 +4,7 @@
 #include "memory/heap/kheap.h"
 #include "status.h"
 #include "kernel.h"
+#include "fat/fat16.h"
 
 
 //Here is the maximum of total filesystem as specified in config.h
@@ -50,7 +51,7 @@ void fs_insert_filesystem(struct filesystem* filesystem)
 
 static void fs_static_load()
 {
-    //fs_insert_filesystem(fat16_init());
+    fs_insert_filesystem(fat16_init());
 }
 
 
