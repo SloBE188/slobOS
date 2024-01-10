@@ -3,6 +3,7 @@
 
 
 #include "config.h"
+#include "fs/file.h"
 
 typedef unsigned int CENTOS_DISK_TYPE;
 
@@ -13,6 +14,7 @@ struct disk
 {
     CENTOS_DISK_TYPE type;
     int sector_size;
+    struct filesystem* filesysem;
 
 };
 

@@ -20,4 +20,8 @@
 //disk
 #define CENTOS_SECTOR_SIZE 512
 
+//filesystem
+#define CENTOS_MAX_FILESYSTEMS 12
+#define CENTOS_MAX_FILE_DESCRIPTORS 512
+
 #endif
