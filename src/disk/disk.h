@@ -14,8 +14,14 @@ struct disk
 {
     CENTOS_DISK_TYPE type;
     int sector_size;
-    struct filesystem* filesysem;
 
+    // The id of the disk
+    int id;
+
+    struct filesystem* filesystem;
+
+    // The private data of our filesystem
+    void* fs_private;
 };
 
 
