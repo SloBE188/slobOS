@@ -23,5 +23,6 @@
 //filesystem
 #define CENTOS_MAX_FILESYSTEMS 12
 #define CENTOS_MAX_FILE_DESCRIPTORS 512
+#define CENTOS_MAX_PATH 108
 
 #endif
