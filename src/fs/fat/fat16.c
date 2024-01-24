@@ -2,11 +2,11 @@
 #include "string/string.h"
 #include "disk/disk.h"
 #include "disk/streamer.h"
-#include "status.h"
-#include <stdint.h>
 #include "memory/heap/kheap.h"
 #include "memory/memory.h"
+#include "status.h"
 #include "kernel.h"
+#include <stdint.h>
 
 #define CENTOS_FAT16_SIGNATURE 0x29
 #define CENTOS_FAT16_FAT_ENTRY_SIZE 0x02
@@ -159,7 +159,7 @@ int fat16_get_total_items_for_directory(struct disk* disk, uint32_t directory_st
     struct fat_directory_item item;
     struct fat_directory_item empty_item;
     memset(&empty_item, 0, sizeof(empty_item));
-
+    
     struct fat_private* fat_private = disk->fs_private;
 
     int res = 0;
@@ -243,7 +243,6 @@ int fat16_get_root_directory(struct disk* disk, struct fat_private* fat_private,
 out:
     return res;
 }
-
 int fat16_resolve(struct disk* disk)
 {
     int res = 0;
@@ -252,7 +251,7 @@ int fat16_resolve(struct disk* disk)
 
     disk->fs_private = fat_private;
     disk->filesystem = &fat16_fs;
-
+    
     struct disk_stream* stream = diskstreamer_new(disk->id);
     if(!stream)
     {
@@ -291,6 +290,7 @@ out:
     }
     return res;
 }
+
 void fat16_to_proper_string(char** out, const char* in)
 {
     while(*in != 0x00 && *in != 0x20)
@@ -536,12 +536,12 @@ struct fat_directory* fat16_load_fat_directory(struct disk* disk, struct fat_dir
         goto out;
     }
 
-    res = fat16_read_internal(disk, cluster, 0x00, directory_size, directory->item);
+    res = fat16_read_internal(disk, cluster,0x00, directory_size, directory->item);
     if (res != CENTOS_ALL_OK)
     {
         goto out;
     }
-
+    
 
 out:
     if (res != CENTOS_ALL_OK)
@@ -617,7 +617,6 @@ out:
 
 void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode)
 {
-    return 0;
     if (mode != FILE_MODE_READ)
     {
         return ERROR(-ERDONLY);

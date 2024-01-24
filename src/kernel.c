@@ -133,6 +133,17 @@ void kernel_main()
 
 
 
+    /*PATH PARSER TESTING
+        struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+
+    if(root_path)
+    {
+
+
+    }*/
+
+
+
     int fd = fopen("0:/hello.txt", "r");
     if (fd)
     {
@@ -143,25 +154,6 @@ void kernel_main()
         print(buf);
     }
     while(1) {}
-
-
-    /*PATH PARSER TESTING
-        struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
-
-    if(root_path)
-    {
-
-
-    }*/
-
-    //Create a new diskstreamer that reads from disk zero
-    struct disk_stream* stream = diskstreamer_new(0);
-    //Seek just past our bootloader
-    diskstreamer_seek(stream, 0x201);
-    unsigned char c = 0;
-    //Read one byte
-    diskstreamer_read(stream, &c, 1);
-    while(1){}
 
     
 
