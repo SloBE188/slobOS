@@ -25,4 +25,10 @@
 #define CENTOS_MAX_FILE_DESCRIPTORS 512
 #define CENTOS_MAX_PATH 108
 
+//GDT
+#define PEACHOS_TOTAL_GDT_SEGMENTS 6
+
+//Tasks/Processes
+
+
 #endif
