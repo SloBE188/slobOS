@@ -26,7 +26,7 @@
 #define CENTOS_MAX_PATH 108
 
 //GDT
-#define PEACHOS_TOTAL_GDT_SEGMENTS 6
+#define CENTOS_TOTAL_GDT_SEGMENTS 6
 
 //Tasks/Processes
 
