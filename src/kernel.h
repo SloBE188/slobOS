@@ -8,7 +8,7 @@
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 20
 
-#define CENTOS_MAX_PATH 108     //Maximale Länge eines Pfades
+#define SLOBOS_MAX_PATH 108     //Maximale Länge eines Pfades
 
 #define ERROR(value) (void*)(value)
 #define ERROR_I(value) (int)(value)

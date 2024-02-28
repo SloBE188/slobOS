@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "kernel.h"
 
-//representing a single interruptn in our interrupt descriptor table
+//representing a single interrupt in our interrupt descriptor table
 struct idt_desc
 {
     uint16_t offset_1;  //offset bits 0-15
@@ -19,7 +19,7 @@ struct idt_desc
 struct idtr_desc
 {
     uint16_t limit;     //size of descriptor table -1
-    uint32_t base;      //Base address of the start of the idt
+    uint32_t base;      //Base address of the start of the idt (location where the table starts)
 }__attribute__((packed));
 
 void idt_init();

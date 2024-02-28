@@ -9,12 +9,12 @@ struct heap_table kernel_heap_table;
 /*This function creates our kernel heap and inizializes it.*/
 void kheap_init()
 {
-    int total_table_entries = CENTOS_HEAP_SIZE_BYTES / CENTOS_HEAP_BLOCK_SIZE;
-    kernel_heap_table.entries = (HEAP_BLOCK_TABLE_ENTRY*)(CENTOS_HEAP_TABLE_ADDRESS);
+    int total_table_entries = SLOBOS_HEAP_SIZE_BYTES / SLOBOS_HEAP_BLOCK_SIZE;
+    kernel_heap_table.entries = (HEAP_BLOCK_TABLE_ENTRY*)(SLOBOS_HEAP_TABLE_ADDRESS);
     kernel_heap_table.total = total_table_entries;
 
-    void* end = (void*)(CENTOS_HEAP_ADDRESS + CENTOS_HEAP_SIZE_BYTES);
-    int res = heap_create(&kernel_heap, (void*)(CENTOS_HEAP_ADDRESS), end, &kernel_heap_table);
+    void* end = (void*)(SLOBOS_HEAP_ADDRESS + SLOBOS_HEAP_SIZE_BYTES);
+    int res = heap_create(&kernel_heap, (void*)(SLOBOS_HEAP_ADDRESS), end, &kernel_heap_table);
     if (res < 0)
     {
         print("Failed to create heap\n");

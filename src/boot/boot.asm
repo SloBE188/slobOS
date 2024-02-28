@@ -10,7 +10,7 @@ nop
 
 
 ; FAT16 Header
-OEMIdentifier           db 'CENTOS  '   ;string must be 8 bits
+OEMIdentifier           db 'SLOBOS  '   ;string must be 8 bits
 BytesPerSector          dw 0x200
 SectorsPerCluster       db 0x80
 ReservedSectors         dw 200
@@ -91,7 +91,7 @@ gdt_descriptor:
 
 [BITS 32]
 load32:
-    mov eax, 1          ;Der Sektor im Speicher, wovon wir den kernel laden möchten (0 ist der Bootsektor)
+    mov eax, 1          ;Der Sektor im Speicher, wovon ich den kernel laden möchte (0 ist der Bootsektor)
     mov ecx, 100        ;Totale Nummer von Sektoren, welche wir laden wollen.
     mov edi, 0x0100000  ;Adresse, wohin wir die Sektoren laden wollen.
     call ata_lba_read

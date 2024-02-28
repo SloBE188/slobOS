@@ -30,7 +30,7 @@ struct task* task_new()
     }
 
     res = task_init(task);
-    if (res != CENTOS_ALL_OK)
+    if (res != SLOBOS_ALL_OK)
     {
         goto out;
     }
@@ -109,9 +109,9 @@ int task_init(struct task* task)
         return -EIO;
     }
 
-    task->registers.ip = CENTOS_PROGRAM_VIRTUAL_ADDRESS;
+    task->registers.ip = SLOBOS_PROGRAM_VIRTUAL_ADDRESS;
     task->registers.ss = USER_DATA_SEGMENT;
-    task->registers.esp = CENTOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
+    task->registers.esp = SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
 
     return 0;
 }

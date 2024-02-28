@@ -8,10 +8,10 @@
 #include "kernel.h"
 #include <stdint.h>
 
-#define CENTOS_FAT16_SIGNATURE 0x29
-#define CENTOS_FAT16_FAT_ENTRY_SIZE 0x02
-#define CENTOS_FAT16_BAD_SECTOR 0xFF7
-#define CENTOS_FAT16_UNUSED 0x00
+#define SLOBOS_FAT16_SIGNATURE 0x29
+#define SLOBOS_FAT16_FAT_ENTRY_SIZE 0x02
+#define SLOBOS_FAT16_BAD_SECTOR 0xFF7
+#define SLOBOS_FAT16_UNUSED 0x00
 
 typedef unsigned int FAT_ITEM_TYPE;
 #define FAT_ITEM_TYPE_DIRECTORY 0
@@ -169,7 +169,7 @@ int fat16_get_total_items_for_directory(struct disk *disk, uint32_t directory_st
     int i = 0;
     int directory_start_pos = directory_start_sector * disk->sector_size;
     struct disk_stream *stream = fat_private->directory_stream;
-    if (diskstreamer_seek(stream, directory_start_pos) != CENTOS_ALL_OK)
+    if (diskstreamer_seek(stream, directory_start_pos) != SLOBOS_ALL_OK)
     {
         res = -EIO;
         goto out;
@@ -177,7 +177,7 @@ int fat16_get_total_items_for_directory(struct disk *disk, uint32_t directory_st
 
     while (1)
     {
-        if (diskstreamer_read(stream, &item, sizeof(item)) != CENTOS_ALL_OK)
+        if (diskstreamer_read(stream, &item, sizeof(item)) != SLOBOS_ALL_OK)
         {
             res = -EIO;
             goto out;
@@ -227,13 +227,13 @@ int fat16_get_root_directory(struct disk *disk, struct fat_private *fat_private,
     }
 
     struct disk_stream *stream = fat_private->directory_stream;
-    if (diskstreamer_seek(stream, fat16_sector_to_absolute(disk, root_dir_sector_pos)) != CENTOS_ALL_OK)
+    if (diskstreamer_seek(stream, fat16_sector_to_absolute(disk, root_dir_sector_pos)) != SLOBOS_ALL_OK)
     {
         res = -EIO;
         goto out;
     }
 
-    if (diskstreamer_read(stream, dir, root_dir_size) != CENTOS_ALL_OK)
+    if (diskstreamer_read(stream, dir, root_dir_size) != SLOBOS_ALL_OK)
     {
         res = -EIO;
         goto out;
@@ -262,7 +262,7 @@ int fat16_resolve(struct disk *disk)
         goto out;
     }
 
-    if (diskstreamer_read(stream, &fat_private->header, sizeof(fat_private->header)) != CENTOS_ALL_OK)
+    if (diskstreamer_read(stream, &fat_private->header, sizeof(fat_private->header)) != SLOBOS_ALL_OK)
     {
         res = -EIO;
         goto out;
@@ -274,7 +274,7 @@ int fat16_resolve(struct disk *disk)
         goto out;
     }
 
-    if (fat16_get_root_directory(disk, fat_private, &fat_private->root_directory) != CENTOS_ALL_OK)
+    if (fat16_get_root_directory(disk, fat_private, &fat_private->root_directory) != SLOBOS_ALL_OK)
     {
         res = -EIO;
         goto out;
@@ -365,7 +365,7 @@ static int fat16_get_fat_entry(struct disk *disk, int cluster)
     }
 
     uint32_t fat_table_position = fat16_get_first_fat_sector(private) * disk->sector_size;
-    res = diskstreamer_seek(stream, fat_table_position * (cluster * CENTOS_FAT16_FAT_ENTRY_SIZE));
+    res = diskstreamer_seek(stream, fat_table_position * (cluster * SLOBOS_FAT16_FAT_ENTRY_SIZE));
     if (res < 0)
     {
         goto out;
@@ -403,7 +403,7 @@ static int fat16_get_cluster_for_offset(struct disk *disk, int starting_cluster,
         }
 
         // Sector is marked as bad?
-        if (entry == CENTOS_FAT16_BAD_SECTOR)
+        if (entry == SLOBOS_FAT16_BAD_SECTOR)
         {
             res = -EIO;
             goto out;
@@ -447,13 +447,13 @@ static int fat16_read_internal_from_stream(struct disk *disk, struct disk_stream
     int starting_pos = (starting_sector * disk->sector_size) + offset_from_cluster;
     int total_to_read = total > size_of_cluster_bytes ? size_of_cluster_bytes : total;
     res = diskstreamer_seek(stream, starting_pos);
-    if (res != CENTOS_ALL_OK)
+    if (res != SLOBOS_ALL_OK)
     {
         goto out;
     }
 
     res = diskstreamer_read(stream, out, total_to_read);
-    if (res != CENTOS_ALL_OK)
+    if (res != SLOBOS_ALL_OK)
     {
         goto out;
     }
@@ -536,13 +536,13 @@ struct fat_directory *fat16_load_fat_directory(struct disk *disk, struct fat_dir
     }
 
     res = fat16_read_internal(disk, cluster, 0x00, directory_size, directory->item);
-    if (res != CENTOS_ALL_OK)
+    if (res != SLOBOS_ALL_OK)
     {
         goto out;
     }
 
 out:
-    if (res != CENTOS_ALL_OK)
+    if (res != SLOBOS_ALL_OK)
     {
         fat16_free_directory(directory);
     }
@@ -570,7 +570,7 @@ struct fat_item *fat16_new_fat_item_for_directory_item(struct disk *disk, struct
 struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct fat_directory *directory, const char *name)
 {
     struct fat_item *f_item = 0;
-    char tmp_filename[CENTOS_MAX_PATH];
+    char tmp_filename[SLOBOS_MAX_PATH];
     for (int i = 0; i < directory->total; i++)
     {
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));

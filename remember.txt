@@ -14,3 +14,14 @@ layout asm
 new system siuu
 
 #Das bedeutet, das under Kernel nach genau einem mb (1024) geladen wird. Das wäre adresse 100000(HEX). Also das ist dann das ORG.
+
+
+Commenting done (understood it):
+    boot.asm
+    disk.c
+    dish.h
+    io.asm
+    io.h 
+    idt.asm
+    idt.c
+    idt.h

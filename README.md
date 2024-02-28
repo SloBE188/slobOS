@@ -1,4 +1,4 @@
-# CentOS
+# SLOBOS
 Multitasking OS
 
 Real Mode:

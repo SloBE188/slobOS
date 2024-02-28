@@ -90,8 +90,8 @@ void panic(const char* msg)
 
 //GDT
 struct tss tss;
-struct gdt gdt_real[CENTOS_TOTAL_GDT_SEGMENTS];
-struct gdt_structured gdt_structured[CENTOS_TOTAL_GDT_SEGMENTS] = {
+struct gdt gdt_real[SLOBOS_TOTAL_GDT_SEGMENTS];
+struct gdt_structured gdt_structured[SLOBOS_TOTAL_GDT_SEGMENTS] = {
     {.base = 0x00, .limit = 0x00, .type = 0x00},                // NULL Segment
     {.base = 0x00, .limit = 0xffffffff, .type = 0x9a},           // Kernel code segment
     {.base = 0x00, .limit = 0xffffffff, .type = 0x92},            // Kernel data segment
@@ -105,7 +105,7 @@ void kernel_main()
     print("Vamos\nvon Nils");
 
     memset(gdt_real, 0x00, sizeof(gdt_real));
-    gdt_structured_to_gdt(gdt_real, gdt_structured, CENTOS_TOTAL_GDT_SEGMENTS);
+    gdt_structured_to_gdt(gdt_real, gdt_structured, SLOBOS_TOTAL_GDT_SEGMENTS);
 
     // Load the gdt
     gdt_load(gdt_real, sizeof(gdt_real));

@@ -3,7 +3,7 @@
 #include "memory/memory.h"
 #include "io/io.h"
 
-struct idt_desc idt_descriptors[CENTOS_TOTAL_INTERRUPTS];
+struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
 
 extern void idt_load (struct idtr_desc* ptr);
@@ -19,7 +19,7 @@ void int21h_handler()
     /*Send this to the PIC to acknowledge we have handled the interrupt*/
     outb(0x20,0x20);
 }
-/*This no interrupt handler will bne used when their is no
+/*This no interrupt handler will be used when their is no
 associated interrupt routine for an interrupt number*/
 void no_interrupt_handler()
 {
@@ -33,7 +33,7 @@ void idt_zero()
     print("Divide by zero error\n");
 }
 
-//This function is used to map an interrupt to an address
+//This function is used to map an interrupt to an address (to map a interrupt to a place in the Interrupt descriptor table)
 void idt_set(int interrupt_no, void* address)
 {
     struct idt_desc* desc = &idt_descriptors[interrupt_no];
@@ -46,17 +46,18 @@ void idt_set(int interrupt_no, void* address)
 
 void idt_init()
 {
-    //memset will be implemented soon
+    //memset the idt (das keine random werte drinn sind sondern nur Nullen)
     memset(idt_descriptors, 0, sizeof(idt_descriptors));
-    // This is for the actual table size
+    // This is for the actual table size from the IDT
     idtr_descriptor.limit = sizeof(idt_descriptors) -1;
-    /*This ist the base pointer of wehere our idt is stored. We pass the pointer and cast it to
+    /*This is the base pointer of where the idt is stored. We pass the pointer and cast it to
     uint32_t to stoire it in the descriptor*/
     idtr_descriptor.base = (uint32_t) idt_descriptors;
 
 
-    //This loop sets all interrupts to point to the no interrupt routine
-    for (int i = 0; i < CENTOS_TOTAL_INTERRUPTS; i++)
+    //This loop sets all interrupts to point to the no interrupt routine so every interrupt (i have 512) has a ISR assigned to it. When i add a interrupt i have to add them manually
+    //like with the int21h (idt_set(0x21, int21h);)
+    for (int i = 0; i < SLOBOS_TOTAL_INTERRUPTS; i++)
     {
         idt_set(i, no_interrupt);
     }
@@ -65,7 +66,7 @@ void idt_init()
     //Divide by zero interrupt (idt_zero) gets maped
     idt_set(0, idt_zero);
 
-    /*Here we set out keyboard interrupt 0x21 to point to our int21h
+    /*Here i set the keyboard interrupt 0x21 to point to the int21h
     handler which is defined in asm. The int21h handler eventually
     calls the int21h_handler C function defined above here.
     int21h is in the src/idt/idt.asm file*/

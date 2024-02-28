@@ -10,8 +10,8 @@
 
 
 //Here is the maximum of total filesystem as specified in config.h
-struct filesystem* filesystems[CENTOS_MAX_FILESYSTEMS];
-struct file_descriptor* file_descriptors[CENTOS_MAX_FILE_DESCRIPTORS];
+struct filesystem* filesystems[SLOBOS_MAX_FILESYSTEMS];
+struct file_descriptor* file_descriptors[SLOBOS_MAX_FILE_DESCRIPTORS];
 
 
 
@@ -20,7 +20,7 @@ by someone who wants to register a new filesystem in the VFS Layer.*/
 static struct filesystem** fs_get_free_filesystem()
 {
     int i = 0;
-    for (i = 0; i < CENTOS_MAX_FILESYSTEMS; i++)
+    for (i = 0; i < SLOBOS_MAX_FILESYSTEMS; i++)
     {
         if (filesystems[i] == 0)
         {
@@ -81,7 +81,7 @@ static void file_free_descriptor(struct file_descriptor* desc)
 static int file_new_descriptor(struct file_descriptor** desc_out)
 {
     int res = -ENOMEM;
-    for (int i = 0; i < CENTOS_MAX_FILE_DESCRIPTORS; i++)
+    for (int i = 0; i < SLOBOS_MAX_FILE_DESCRIPTORS; i++)
     {
         if (file_descriptors[i] == 0)
         {
@@ -102,7 +102,7 @@ static int file_new_descriptor(struct file_descriptor** desc_out)
 THis here works similary. We identify open file descriptors by numbers, we can get the descriptor information if we know the number. The descriptor describes the open file*/
 static struct file_descriptor* file_get_descriptor(int fd)
 {
-    if (fd <= 0 || fd >= CENTOS_MAX_FILE_DESCRIPTORS)
+    if (fd <= 0 || fd >= SLOBOS_MAX_FILE_DESCRIPTORS)
     {
         return 0;
     }
@@ -118,7 +118,7 @@ then NULL is returned.*/
 struct filesystem* fs_resolve(struct disk* disk)
 {
     struct filesystem* fs = 0;
-    for (int i = 0; i < CENTOS_MAX_FILESYSTEMS; i++)
+    for (int i = 0; i < SLOBOS_MAX_FILESYSTEMS; i++)
     {
         if (filesystems[i] != 0 && filesystems[i]->resolve(disk) == 0)
         {
@@ -240,7 +240,7 @@ int fclose(int fd)
 
     res = desc->filesystem->close(desc->private);
     
-    if (res == CENTOS_ALL_OK)
+    if (res == SLOBOS_ALL_OK)
     {
         file_free_descriptor(desc);
     }

@@ -5,14 +5,14 @@
 #include "config.h"
 #include "fs/file.h"
 
-typedef unsigned int CENTOS_DISK_TYPE;
+typedef unsigned int SLOBOS_DISK_TYPE;
 
 
-//Represents a real physical hard disk
-#define CENTOS_DISK_TYPE_REAL 0
+//Dieses Struct representiert eine effektive Disk im System
+#define SLOBOS_DISK_TYPE_REAL 0
 struct disk
 {
-    CENTOS_DISK_TYPE type;
+    SLOBOS_DISK_TYPE type;
     int sector_size;
 
     // The id of the disk
@@ -20,7 +20,7 @@ struct disk
 
     struct filesystem* filesystem;
 
-    // The private data of our filesystem
+    // The private data of the filesystem
     void* fs_private;
 };
 
