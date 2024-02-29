@@ -25,7 +25,7 @@ disable_interrupts:
 
 
 ;lädt die IDT mit dem "lidt" befehl (load interrupt descriptor table). 
-;Die IDT ist eine Datenstruktur im OS, welche die Adressesn zu den verschiedenen ISR's(Interrupt Service Routinen) enthält.
+;Die IDT ist eine Datenstruktur im OS, welche die Adressen zu den verschiedenen ISR's(Interrupt Service Routinen) enthält.
 ; dieses label ([ebp+8]) erwartet ein pointer auf die IDT (struct idtr_desc*)
 idt_load:
     push ebp
@@ -38,7 +38,7 @@ idt_load:
     ret
 
 
-;Ist eine ISR für den interrupt 21h. Wenn der Interrupts 21h ausgeführt wird, deaktiviert dieses label die interrupts, sichert den aktuellen Prozessorzustand,
+;Ist die ISR für den interrupt 21h. Wenn der Interrupts 21h ausgeführt wird, deaktiviert dieses label die interrupts, sichert den aktuellen Prozessorzustand,
 ;ruft die effektive behandlungsroutine (handler) auf (ist IMMER in C geschrieben(int21h_handler)) welcher dann die aktionen effektiv ausführt, wovür dieser interrupt ist,
 ;stellt dann den Prozessorzustand wieder her, aktiviert die interrupts wieder
 ;und kehrt dann aus der interrupt-behandlung zurück (iret)

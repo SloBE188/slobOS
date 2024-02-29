@@ -202,7 +202,7 @@ out:
 This function traverses the heaps block table starting from the specified block, marking
 each block it encounters as free. The traversal stops when it reaches a block that is not
 marked with HEAP_BLOCK_HAS_NEXT, indicating the end of a sequence of allocated blocks.
-Thjis function is typically used to deallocate a sequence of blocks that were previosly
+This function is typically used to deallocate a sequence of blocks that were previosly
 allocated with heap_malloc_blocks.
 @param heap: The heap contaioning the blocks to be freed.
 @param: starting_block: The first block in the sequence to be freed.*/
@@ -220,7 +220,7 @@ void heap_mark_blocks_free(struct heap* heap, int starting_block)
     }
 }
 
-/*This function takes an address and converts it back into a block number in out table.*/
+/*This function takes an address and converts it back into a block number in the table.*/
 int heap_address_to_block(struct heap* heap, void* address)
 {
     return ((int)(address - heap->saddr)) / SLOBOS_HEAP_BLOCK_SIZE;

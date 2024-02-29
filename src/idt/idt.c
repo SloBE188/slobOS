@@ -33,7 +33,10 @@ void idt_zero()
     print("Divide by zero error\n");
 }
 
-//This function is used to map an interrupt to an address (to map a interrupt to a place in the Interrupt descriptor table)
+//funktion wird gebraucht, um die idt table mit den interrupts zu füllen. man muss der funktion die interrupts nummer und die adresse der zuständigen ISR mitliefern.
+/* in der IDT sind direkt die Adressen der ISR (Interrupt Service Routines) gespeichert. Wenn ein Interrupt auftritt, verwendet der Prozessor die IDT,
+ um zu bestimmen, welche ISR aufgerufen werden soll. Diese ISR, die in Assembly geschrieben sind, fungieren als erste Anlaufstelle,
+ um den aktuellen Prozessorzustand zu sichern und die Umgebung für einen sicheren Aufruf des eigentlichen Interrupt-Handlers (in C in disem file geschrieben) vorzubereiten.*/
 void idt_set(int interrupt_no, void* address)
 {
     struct idt_desc* desc = &idt_descriptors[interrupt_no];
@@ -76,3 +79,4 @@ void idt_init()
     idt_load(&idtr_descriptor);
 
 }
+

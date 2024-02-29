@@ -86,3 +86,11 @@ int disk_read_block(struct disk* idisk, unsigned int lba, int total, void* buf)
     return disk_read_sector(lba, total, buf);
     
 }
+
+    /*TESTING DISK IN KERNEL.C
+    char buf[512];
+    disk_read_sector(0, 1, buf);
+    Da ich inzwischen den diskdriver angepasst habe (alles asgelagert)
+    kann man auch so entwas von der disk lesen:
+    disk_read_block(disk_get(0), 20, 4, buf) etc.
+    */
