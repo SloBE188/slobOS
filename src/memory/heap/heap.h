@@ -18,12 +18,12 @@ typedef unsigned char HEAP_BLOCK_TABLE_ENTRY;
 
 
 /*Heap Table ist die Datenstruktur, welche den status von jedem einzelnen block in unserem heap speichert (jeder HEAP_BLOCK_TABLE_ENTRY ist jeweils ein block of memory (4096 bytes)). 
-Jeder Entry ist 4097 Bytes gross
-und der Heap ist 4096 byte aligned, das heisst, wenn ich ein malloc für 5000 bytes mache, werden 2 blöcke (8192) im memory (heap data pool) allocated */
+Jeder Entry ist 4096 Bytes gross und der Heap ist 4096 byte aligned, das heisst, wenn ich ein malloc für 5000 bytes mache, werden 2 blöcke (8192) im memory (heap data pool) allocated.
+Jeder block(jede 4096 bytes) werde ich in meiner implementation oft als index identifizieren (int block) ->page 148. Block 1 = 0x01000000 + 4096, Block 2 = 0x01000000 + 8192 etc.  */
 struct heap_table
 {
-    HEAP_BLOCK_TABLE_ENTRY* entries;
-    size_t total;
+    HEAP_BLOCK_TABLE_ENTRY* entries;    //jeder entry hat seine flags wie taken, free, has next etc.
+    size_t total;                       //anzahl an blöcken (jeweils 4096 bytes gross) im heap
 };
 
 struct heap

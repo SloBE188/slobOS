@@ -27,3 +27,4 @@ Commenting done (understood it):
     idt.h
     kernel.asm
     heap.h
+    heap.c

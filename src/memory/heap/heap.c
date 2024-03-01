@@ -30,7 +30,7 @@ out:
 ptr: The pointer to be checked.
 The function checks if the pointer is aligned to SLOBOS_HEAP_BLOCK_SIZE.
 Returns true if the pointer is aligned, false otherwise.
-We need this function to prevent non 4096 byte aligned addresses being used as you aware out implementation
+I need this function to prevent non 4096 byte aligned addresses being used as the implementation
 is build on the understanding of 4096 byte block of memory.*/
 static bool heap_validate_alignment(void* ptr)
 {
@@ -40,7 +40,7 @@ static bool heap_validate_alignment(void* ptr)
 /*Creates the heap.
 heap: The heap to be created.
 ptr: The pointer to the start of the heap data.
-end: The pointer to the end of the heaop data.
+end: The pointer to the end of the heap data.
 table: The heap table for the heap that discribes which blocks of data at ptr are free and which are not.
 This funcktion creates a heap at the given memory range (ptr, end) using the privided heap table.
 Returns "0" if the heap was successfully created, otherwise returns EINVARG.*/
@@ -82,6 +82,7 @@ static uint32_t heap_align_value_to_upper(uint32_t val)
     return val;
 }
 
+
 static int heap_get_entry_type(HEAP_BLOCK_TABLE_ENTRY entry)
 {
     return entry & 0x0f;
@@ -102,9 +103,10 @@ if no suitable sequence is found.*/
 int heap_get_start_block(struct heap* heap, uint32_t total_blocks)
 {
     struct heap_table* table = heap->table;
-    int bc = 0;
-    int bs = -1;
+    int bc = 0;     //block count
+    int bs = -1;    //block start, -1 zeigt, das noch kein freier block gefunden wurde
 
+    //Mit dieser for-schleife wird jeder eintrag in der heap tabelle überprüft (entry), ob ein block frei ist (HEAP_BLOCK_TABLE_ENTRY_FREE)
     for (size_t i = 0; i < table->total; i++)
     {
         if (heap_get_entry_type(table->entries[i]) != HEAP_BLOCK_TABLE_ENTRY_FREE)
@@ -132,14 +134,14 @@ int heap_get_start_block(struct heap* heap, uint32_t total_blocks)
         return -ENOMEM;
     }
     
-    return bs;
+    return bs;  //wenn die gewünschte anzahl an freien blöcken (total_blocks) gefunden wurde, returned die function den index des startblocks der sequenz.
 
 }
 
 /*This takes a block number and gives you the address, its used for malloc calls.
-The starting block number i spassed to the block variable in this function.
-We then multiply it by the block size  and add on the starting heap data address.
-This gives us the absolute address for the malloced memory which we can then pass back to the program/user.*/
+The starting block number (int block) passed to the block variable in this function.
+i then multiply it by the block size  and add on the starting heap data address.
+This gives the absolute address for the malloced memory which we can then pass back to the program/user.*/
 void* heap_block_to_address(struct heap* heap, int block)
 {
     return heap->saddr + (block * SLOBOS_HEAP_BLOCK_SIZE);
@@ -148,7 +150,7 @@ void* heap_block_to_address(struct heap* heap, int block)
 /*This functiuon marks the blocks allocated as taken so future malloc calls do not overricde the memory*/
 void heap_mark_blocks_taken(struct heap* heap, int start_block, int total_blocks)
 {
-    int end_block = (start_block + total_blocks)-1;
+    int end_block = (start_block + total_blocks)-1; //berechnet index von end block
 
     HEAP_BLOCK_TABLE_ENTRY entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN | HEAP_BLOCK_IS_FIRST;
     if (total_blocks > 1)
@@ -170,13 +172,13 @@ void heap_mark_blocks_taken(struct heap* heap, int start_block, int total_blocks
 /*Allocates a contiguous sequence of blocks in the heap.
 This function attempts to allocate a number of blocks specified by total_blocks in the heap.
 It first identifies a suitable starting block for the allocation unsing the heap_get_start_block
-function. If nu suitable block is found, it returns NULL.
+function. If no suitable block is found, it returns 0.
 After a suitable starting block is found, it converts the block number to a memory address
 using heap_block_to_address. Then it marks the allocated blocks as taken using the heap_mark_blocks_taken
 function.
 @param heap: The heap in which blocks are to be allocated.
 @param total_blocks: The total number of contiguous blocks to allocate.
-@return: The starting address of the allocated vblocks, or NULL if allocation fails.*/
+@return: The starting address of the allocated vblocks, or 0 if allocation fails.*/
 
 void* heap_malloc_blocks(struct heap* heap, uint32_t total_blocks)
 {
@@ -188,9 +190,11 @@ void* heap_malloc_blocks(struct heap* heap, uint32_t total_blocks)
         goto out;
     }
 
+    //from the "heap_get_start_block" function i get the start block returned as a index with the amount of block avaiable wich i asked for, i then turn the blocks in the memory
+    //address with the "heap_block_to_address" function.
     address = heap_block_to_address(heap, start_block);
 
-    // Mark the blocks as taken
+    // Mark the blocks as taken after allocating them so i dont try to allocate them again witch would cause a memory fault (very very very baaaad)
     heap_mark_blocks_taken(heap, start_block, total_blocks);
 
 out:
@@ -215,7 +219,7 @@ void heap_mark_blocks_free(struct heap* heap, int starting_block)
         table->entries[i] = HEAP_BLOCK_TABLE_ENTRY_FREE;
         if (!(entry & HEAP_BLOCK_HAS_NEXT))
         {
-            break;
+            break;  //wenn beim entry kein flag "HEAP_BLOCK_HAS_NEXT" mehr ist, wird kein weiterer block mehr allocated sein und die schleife wird mit "break" verlassen.
         }
     }
 }
@@ -228,7 +232,7 @@ int heap_address_to_block(struct heap* heap, void* address)
 
 /*Allocates a block of memory in the heap.
 This function allocates a block of memory of a specified size in the heap.
-It first aligns the requested size to the upper nearest multiple of the heap block size.
+It first aligns the requested size to the upper nearest multiple of the heap block size (as a example if i need 5000 bytes it will round up to 8192 because of my block size).
 Then, it calculates the total number of blocks required to satisfy the aligned size.
 Finally, it attempts to allocate this number of blocks in the heap using heap_malloc_blocks.
 @param heap: The heap in which the momory is to be allocated
