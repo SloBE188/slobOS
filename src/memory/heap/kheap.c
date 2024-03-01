@@ -22,17 +22,19 @@ void kheap_init()
 
 }
 
-/*Use this function to allocate kernel memory, its jurt like the malloc function.*/
+/*Use this function to allocate kernel memory, its just like the malloc function.*/
 void* kmalloc(size_t size)
 {
     return heap_malloc(&kernel_heap, size);
 }
 
-/*Use this function to free kernel memory, its jurt like the free function.*/
+/*Use this function to free kernel memory, its just like the free function.*/
 void kfree(void* ptr)
 {
     heap_free(&kernel_heap, ptr);
 }
+
+//the kzalloc function allocates memory and then sets the value of the memory to 0x00. This is for user space so the user process is not able to see previously allocated memory!!
 void* kzalloc(size_t size)
 {
     void* ptr = kmalloc(size);
@@ -41,6 +43,6 @@ void* kzalloc(size_t size)
         return 0;
     }
     
-    memset(ptr, 0x00, size);
+    memset(ptr, 0x00, size);    //sets the new allocated memory to 0x00
     return ptr;
 }

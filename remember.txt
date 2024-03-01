@@ -28,3 +28,5 @@ Commenting done (understood it):
     kernel.asm
     heap.h
     heap.c
+    kheap.c
+    kheap.h
