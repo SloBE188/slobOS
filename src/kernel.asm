@@ -28,12 +28,13 @@ _start:
     mov al, 00010001b
     out 0x20, al    ;Tell master PIC
 
-    mov al, 0x20    ;Interrupt 0x20 is where master ISR should start
+    mov al, 0x20    ;Interrupt 0x20(dez 32) is where master ISR needs to start start because interruprs 0-31 are pre defined for the CPU!!
     out 0x21, al
 
     mov al, 000000001b
     out 0x21, al
     ;End remap of the master PIC
+    ;I maybe need to implement the slave PIC later for more interrupts
 
 
     call kernel_main

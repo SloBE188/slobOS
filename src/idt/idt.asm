@@ -38,7 +38,9 @@ idt_load:
     ret
 
 
-;Ist die ISR für den interrupt 21h. Wenn der Interrupts 21h ausgeführt wird, deaktiviert dieses label die interrupts, sichert den aktuellen Prozessorzustand,
+;Ist die ISR für den interrupt 21h. Ich starte mit dem implementieren von den interrupts bei int 20 (0x20(dez 32)) weil die PIC dort startet,
+;die int 0-31 sind pre defined von der CPU also kann ich nur interrupts ab 0x20 implementieren. IRQ0 -IRQ7 verfügbar, IRQ0 (0x20) = System timer, IRQ1 (0x21) = keyboard controller
+; Wenn der Interrupts 21h ausgeführt wird, deaktiviert dieses label die interrupts, sichert den aktuellen Prozessorzustand,
 ;ruft die effektive behandlungsroutine (handler) auf (ist IMMER in C geschrieben(int21h_handler)) welcher dann die aktionen effektiv ausführt, wovür dieser interrupt ist,
 ;stellt dann den Prozessorzustand wieder her, aktiviert die interrupts wieder
 ;und kehrt dann aus der interrupt-behandlung zurück (iret)

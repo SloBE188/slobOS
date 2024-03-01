@@ -6,6 +6,8 @@
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
 
+
+//import asm functions
 extern void idt_load (struct idtr_desc* ptr);
 extern void int21h();
 extern void no_interrupt();
@@ -16,15 +18,15 @@ void int21h_handler()
 {
 
     print("Keyboard pressed\n");
-    /*Send this to the PIC to acknowledge we have handled the interrupt*/
-    outb(0x20,0x20);
+    /*Send this to the PIC to acknowledge i have handled the interrupt*/
+    outb(0x20,0x20); // communicating with the pic is achieved through I/O Ports (command port=0x20, data port=0x21)
 }
 /*This no interrupt handler will be used when their is no
 associated interrupt routine for an interrupt number*/
 void no_interrupt_handler()
 {
-    /*Send this to the PIC to acknowledge we have handled the interrupt*/
-    outb(0x20,0x20); 
+    /*Send this to the PIC to acknowledge i have handled the interrupt*/
+    outb(0x20,0x20); // communicating with the pic is achieved through I/O Ports (command port=0x20, data port=0x21)
 }
 
 //Divide by zero interrupt
@@ -69,7 +71,7 @@ void idt_init()
     //Divide by zero interrupt (idt_zero) gets maped
     idt_set(0, idt_zero);
 
-    /*Here i set the keyboard interrupt 0x21 to point to the int21h
+    /*Here i set the keyboard interrupt 0x21 (IRQ1 in the PIC) to point to the int21h
     handler which is defined in asm. The int21h handler eventually
     calls the int21h_handler C function defined above here.
     int21h is in the src/idt/idt.asm file*/
