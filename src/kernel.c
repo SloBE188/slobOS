@@ -81,10 +81,11 @@ void print(const char* str)
 
 static struct paging_4gb_chunk* kernel_chunk = 0;
 
+//error handling mechanismus for unforseen internal system errors where the kernel cant recover from
 void panic(const char* msg)
 {
-    print(msg);
-    while (1){}
+    print(msg); //panic msg
+    while (1){} //infinite loop to halt operations
     
 }
 
@@ -137,10 +138,13 @@ void kernel_main()
 
 
     //Setting up paging, mapping the entire 4GB of memory linearly to the physical adresses.
+    //Damit habe ich nun den Adressraum "kernel_chunk" erstellt. wenn ich verschiedene prozesse habe und jeder prozess ein eigener adressbereich haben muss,
+    //damit sie von einander isoliert sind, muss ich einfach für jeden prozess seinen eigenen adresraum erstellen. Zum Beispiel so: prozess1 = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
 
 
     //Switch to kernel paging chunk so that the processor follows the kernel paging directory
+    //Hier wechsle ich in das page directory von "kernel_chunk". ich könnte mit der paging switch funktion auch in andere paging directorys von zum beispiel anderen prozessen wechseln
     paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
 
     /*PAGING TESTING

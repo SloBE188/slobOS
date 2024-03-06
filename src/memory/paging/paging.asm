@@ -9,7 +9,7 @@ paging_load_directory:
     push ebp            ;base pointer value gets saved
     mov ebp, esp        ;base pointer is set to the current stack pointer
     mov eax, [ebp+8]    ;the address of the page directory (ebp+8) gets loaded into the eax register
-    mov cr3, eax        ;the content of eax(page directory address) gets stored in the control register (CR3). This action loads the page directorty into the processor, enabling the translation of cirtual to physical addresses
+    mov cr3, eax        ;the content of eax(page directory address) gets stored in the control register (CR3). This action loads the page directorty into the processor, enabling the translation of virtual to physical addresses
     pop ebp             ;previous base pointer value is restored from the stack
     ret
 

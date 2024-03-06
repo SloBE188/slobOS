@@ -19,12 +19,12 @@ Festplattencontroller = Hardwarekomponente (Schnittstelle zwischen CPU & Festpla
 int disk_read_sector(int lba, int total, void* buf)
 {
 
-    outb(0x1F6, (lba >> 24) | 0xE0);            //Select master drive and pass part of the LBA
+    outb(0x1F6, (lba >> 24) | 0xE0);            //Select master (specified as 0xE0) drive and pass part of the LBA
     outb(0x1F2, total);                         //Send the total number of sectors i want to read         
-    outb(0x1F3,(unsigned char)(lba & 0xff));    //Send more of the LBA
-    outb(0x1F4, (unsigned char)(lba >> 8));     //Send more of the LBA
-    outb(0x1F5, (unsigned char)(lba >> 24));    //Send more of the LBA
-    outb(0x1F7, 0x20);
+    outb(0x1F3,(unsigned char)(lba & 0xff));    //Send more of the LBA (Logical Block Address) which indicates the specific location on the disk where the data should be read from or written to. LBA is a 28bit value.
+    outb(0x1F4, (unsigned char)(lba >> 8));     //Send more of the LBA (Logical Block Address) which indicates the specific location on the disk where the data should be read from or written to. LBA is a 28bit value.
+    outb(0x1F5, (unsigned char)(lba >> 24));    //Send more of the LBA (Logical Block Address) which indicates the specific location on the disk where the data should be read from or written to. LBA is a 28bit value.
+    outb(0x1F7, 0x20);                          //0x20 = read command
 
     unsigned short* ptr = (unsigned short*) buf;
     for (int b = 0; b < total; b++)
@@ -39,7 +39,7 @@ int disk_read_sector(int lba, int total, void* buf)
         //Copy from hard disk to memory
         for (int i = 0; i < 256; i++)
         {
-            *ptr = insw(0x1F0);
+            *ptr = insw(0x1F0);     //read 2 bytes at the time into the buffer from the ata controller.
             ptr++;
         }
         
