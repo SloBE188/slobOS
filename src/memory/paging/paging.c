@@ -11,28 +11,40 @@ static uint32_t* current_directory = 0;
 // Funktion zum Initialisieren eines 4-GB großen Paging-Bereichs.
 struct paging_4gb_chunk* paging_new_4gb(uint8_t flags)
 {
-    // Reserviert Speicher für die Page Directorys. Jeder Eintrag zeigt auf eine Page Table.
+    // Reserviert Speicher für das Page Directory. Jeder Eintrag wird später auf eine Page Table zeigen.
     uint32_t* directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
+
+    // Initialisiert den Offset für die Adressberechnung.
     int offset = 0;
+
+    // Iteriert über alle Einträge des Page Directories.
     for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE; i++)
     {
-        // Reserviert Speicher für die 1024 Page Tables.
+        // Reserviert Speicher für eine Page Table, die 1024 Einträge haben wird.
         uint32_t* entry = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
+
+        // Konfiguriert jeden Eintrag in der Page Table.
         for (int b = 0; b < PAGING_TOTAL_ENTRIES_PER_TABLE; b++)
         {
-            // Konfiguriert jeden entry in der Table mit der Basisadresse der page und den Flags.
+            // Setzt die Basisadresse für die Seite und fügt die Flags hinzu.
             entry[b] = (offset + (b * PAGING_PAGE_SIZE)) | flags;
         }
+
+        // Erhöht den Offset um die Größe des durch diese Table abgedeckten Speichers.
         offset += (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE);
-        // Konfiguriert die Directory entrys, um auf die Page Tables zu verweisen.
+
+        // Verknüpft den Page Directory-Eintrag mit der Page Table und setzt die Flags, einschließlich des Schreibschutzes.
         directory[i] = (uint32_t)entry | flags | PAGING_IS_WRITEABLE;
     }
 
-    // Erstellt und gibt einen Chunk für die 4 GB Paging-Struktur zurück.
+    // Erstellt den Paging-Chunk und weist ihm das Page Directory zu.
     struct paging_4gb_chunk* chunk_4gb = kzalloc(sizeof(struct paging_4gb_chunk));
     chunk_4gb->directory_entry = directory;
+
+    // Gibt den initialisierten 4-GB-Paging-Chunk zurück.
     return chunk_4gb;
 }
+
 
 // Wechselt das aktuelle Page Directory.
 void paging_switch(uint32_t* directory)
