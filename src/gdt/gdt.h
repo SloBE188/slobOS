@@ -1,6 +1,8 @@
 #ifndef GDT_H
 #define GDT_H
 #include <stdint.h>
+
+//format of a GDT entry
 struct gdt
 {
     uint16_t segment;
@@ -11,6 +13,8 @@ struct gdt
     uint8_t base_24_31_bits;
 };
 
+
+//better readable format of a GDT entry (for humans and dummies hahaha)
 struct gdt_structured
 {
     uint32_t base;

@@ -105,8 +105,8 @@ void kernel_main()
     terminal_initialize();
     print("Vamos\nvon Nils");
 
-    memset(gdt_real, 0x00, sizeof(gdt_real));
-    gdt_structured_to_gdt(gdt_real, gdt_structured, SLOBOS_TOTAL_GDT_SEGMENTS);
+    memset(gdt_real, 0x00, sizeof(gdt_real));           //sets the segments of the gdt to 0x00 so no random values are there
+    gdt_structured_to_gdt(gdt_real, gdt_structured, SLOBOS_TOTAL_GDT_SEGMENTS); //form the gdt_structured to gdt so the pc understands it
 
     // Load the gdt
     gdt_load(gdt_real, sizeof(gdt_real));
