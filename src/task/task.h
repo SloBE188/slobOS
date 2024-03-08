@@ -4,6 +4,8 @@
 #include "config.h"
 #include "memory/paging/paging.h"
 
+
+//relevant registers for a task
 struct registers
 {
     uint32_t edi;
@@ -29,7 +31,7 @@ struct task
      */
     struct paging_4gb_chunk* page_directory;
 
-    // The registers of the task when the task is not running
+    // The registers of the task when the task is not running (other task runs with task switching)
     struct registers registers;
 
     // The next task in the linked list

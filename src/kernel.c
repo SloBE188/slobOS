@@ -91,7 +91,7 @@ void panic(const char* msg)
 
 //GDT
 struct tss tss;
-struct gdt gdt_real[SLOBOS_TOTAL_GDT_SEGMENTS];
+struct gdt gdt_real[SLOBOS_TOTAL_GDT_SEGMENTS];         //mal recherchieren 
 struct gdt_structured gdt_structured[SLOBOS_TOTAL_GDT_SEGMENTS] = {
     {.base = 0x00, .limit = 0x00, .type = 0x00},                // NULL Segment
     {.base = 0x00, .limit = 0xffffffff, .type = 0x9a},           // Kernel code segment
@@ -129,7 +129,7 @@ void kernel_main()
     // Setup the TSS
     memset(&tss, 0x00, sizeof(tss));
     tss.esp0 = 0x600000;
-    tss.ss0 = KERNEL_DATA_SELECTOR;
+    tss.ss0 = KERNEL_DATA_SELECTOR;     // set the kernel stack segment selector to the value i set before (0x10)
 
     // Load the TSS
     tss_load(0x28);
