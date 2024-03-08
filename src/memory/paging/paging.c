@@ -45,6 +45,47 @@ struct paging_4gb_chunk* paging_new_4gb(uint8_t flags)
     return chunk_4gb;
 }
 
+int paging_map_to(uint32_t *directory, void *virt, void *phys, void *phys_end, int flags)
+{
+
+    int res = 0;
+
+    //checks the allignment (must be page aligned) of the phys, virt & phys end variable
+    if((uint32_t)virt % PAGING_PAGE_SIZE)
+    {
+        res = -EINVARG;
+        goto out;
+    }
+
+    if((uint32_t)phys % PAGING_PAGE_SIZE)
+    {
+        res = -EINVARG;
+        goto out;
+    }
+
+    if((uint32_t) phys_end % PAGING_PAGE_SIZE)
+    {
+        res = -EINVARG;
+        goto out;
+    }
+
+    //checks if the phys end address is smaller than the phys address wich shouldn't be.
+    if((uint32_t) phys_end < (uint32_t) phys)
+    {
+        res = -EINVARG;
+        goto out;
+    }
+
+    //calculates total bytes between the phys and phys end adresses and converts this in number of pages
+    uint32_t total_bytes = phys_end - phys;
+    int total_pages = total_bytes / PAGING_PAGE_SIZE;
+    res = paging_map_range(directory, virt, phys, total_pages, flags);
+
+out:
+    return res;
+
+}
+
 
 // Wechselt das aktuelle Page Directory.
 void paging_switch(uint32_t* directory)
