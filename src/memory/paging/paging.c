@@ -44,6 +44,69 @@ struct paging_4gb_chunk* paging_new_4gb(uint8_t flags)
     // Gibt den initialisierten 4-GB-Paging-Chunk zurück.
     return chunk_4gb;
 }
+
+
+/*
+uint32_t *directoy: the page directory to be modofied with the new mappings
+void* virt: the starting virtual address that needs to be mapped
+void* phys: the starting physical address to which the starting virtual address will be mapped
+int count: the number of contiguous pages to map
+int flags: flags to set properties of the pages like read only or read write etc.*/
+int paging_map_range(uint32_t* directory, void* virt, void* phys, int count, int flags)
+{
+    int res = 0;
+
+    //for loop for the cound(number of pages to map)
+    for (int i = 0; i < count; i++)
+    {
+        res = paging_map(directory, virt, phys, flags);     //Maps as many single pages of virtual memory to single pages of physical memory as "counr" says 
+        if (res == 0)
+        {
+            break;                                          //if the functio returns zero (couldnt map) it increments the virtual and phsical addresses by PAGING_PAGE_SIZE and moves on to the next page
+        }
+        virt += PAGING_PAGE_SIZE;
+        phys += PAGING_PAGE_SIZE;
+        
+    }
+
+
+    return res;
+}
+
+/*
+uint32_t *directory: the page directory that the funcion will modify
+the function first checks if the virtual and physical addresses are page aligned
+if yes, it proceeds t set the mapping by calling paging_set
+it maps a single page of virtual memory to a single page of physical memory
+*/
+int paging_map(uint32_t *directory, void *virt, void *phys, int flags)
+{
+
+    if ((unsigned int)virt % PAGING_PAGE_SIZE || ((unsigned int)phys % PAGING_PAGE_SIZE))
+    {
+        return -EINVARG;
+    }
+    
+
+    return paging_set(directory, virt, (uint32_t) phys | flags);
+}
+
+
+/*param ptr: address to be aligned
+the function first checks if the address is already aligned
+if the address is not aligned, the function calculates the nearest higher address that is aligned.
+the newly calculated address is the returned as a void pointer*/
+void* paging_align_address(void* ptr)
+{
+    if ((uint32_t)ptr % PAGING_PAGE_SIZE)
+    {
+        return (void*)((uint32_t)ptr + PAGING_PAGE_SIZE - ((uint32_t)ptr % PAGING_PAGE_SIZE));
+    }
+
+    return ptr;
+    
+}
+
 // Die Funktion paging_map_to ordnet eine physische Adressbereich einer virtuellen Adresse im Paging-Verzeichnis zu.
 // Sie nimmt ein Verzeichnis (Page Directory), einen virtuellen Startpunkt, einen physischen Startpunkt,
 // ein physisches Endpunkt und Flaggen für die Seiteneigenschaften.
@@ -81,7 +144,7 @@ int paging_map_to(uint32_t *directory, void *virt, void *phys, void *phys_end, i
     //calculates total bytes between the phys and phys end adresses and converts this in number of pages
     uint32_t total_bytes = phys_end - phys;
     int total_pages = total_bytes / PAGING_PAGE_SIZE;
-    
+
     // Ruft eine andere Funktion auf, um den Bereich im Verzeichnis tatsächlich zuzuordnen.
     // Diese Funktion würde das Page Directory aktualisieren, um die virtuelle Adresse
     // auf den physischen Bereich zu mappen mit der gegebenen Anzahl von Seiten und Flags.

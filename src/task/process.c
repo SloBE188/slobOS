@@ -62,7 +62,7 @@ static int process_load_binary(const char* filename, struct process *process)
     }
 
     // Reserviert Speicher für den process/programm.
-    void *program_data_ptr = kzalloc(stat.filesize);
+    void *program_data_ptr = kzalloc(stat.filesize);        //->kernel sieht direkt diese adresse von kzalloc zurückgegeben
 
     if (!program_data_ptr)
     {
