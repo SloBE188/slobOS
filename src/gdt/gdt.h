@@ -11,7 +11,7 @@ struct gdt
     uint8_t access;
     uint8_t high_flags;
     uint8_t base_24_31_bits;
-};
+}__attribute__((packed));   //this attribute packed thing is set so the compiler doesnt fuck up the memory alignment
 
 
 //better readable format of a GDT entry (for humans and dummies hahaha)
