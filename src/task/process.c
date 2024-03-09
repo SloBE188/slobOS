@@ -242,5 +242,8 @@ int process_load(const char* filename, struct process** process)
 
     //Load the process into the free slot
     res = process_load_for_slot(filename, process, process_slot);
+
+out:
+    return res;
     
 }

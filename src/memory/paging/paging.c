@@ -46,32 +46,6 @@ struct paging_4gb_chunk* paging_new_4gb(uint8_t flags)
 }
 
 
-/*
-uint32_t *directoy: the page directory to be modofied with the new mappings
-void* virt: the starting virtual address that needs to be mapped
-void* phys: the starting physical address to which the starting virtual address will be mapped
-int count: the number of contiguous pages to map
-int flags: flags to set properties of the pages like read only or read write etc.*/
-int paging_map_range(uint32_t* directory, void* virt, void* phys, int count, int flags)
-{
-    int res = 0;
-
-    //for loop for the cound(number of pages to map)
-    for (int i = 0; i < count; i++)
-    {
-        res = paging_map(directory, virt, phys, flags);     //Maps as many single pages of virtual memory to single pages of physical memory as "counr" says 
-        if (res == 0)
-        {
-            break;                                          //if the functio returns zero (couldnt map) it increments the virtual and phsical addresses by PAGING_PAGE_SIZE and moves on to the next page
-        }
-        virt += PAGING_PAGE_SIZE;
-        phys += PAGING_PAGE_SIZE;
-        
-    }
-
-
-    return res;
-}
 
 /*
 uint32_t *directory: the page directory that the funcion will modify
@@ -79,7 +53,7 @@ the function first checks if the virtual and physical addresses are page aligned
 if yes, it proceeds t set the mapping by calling paging_set
 it maps a single page of virtual memory to a single page of physical memory
 */
-int paging_map(uint32_t *directory, void *virt, void *phys, int flags)
+int paging_map(uint32_t* directory, void* virt, void* phys, int flags)
 {
 
     if ((unsigned int)virt % PAGING_PAGE_SIZE || ((unsigned int)phys % PAGING_PAGE_SIZE))
@@ -232,4 +206,31 @@ int paging_set(uint32_t* directory, void* virt, uint32_t val)
     table[table_index] = val;
 
     return 0;
+}
+
+/*
+uint32_t *directoy: the page directory to be modofied with the new mappings
+void* virt: the starting virtual address that needs to be mapped
+void* phys: the starting physical address to which the starting virtual address will be mapped
+int count: the number of contiguous pages to map
+int flags: flags to set properties of the pages like read only or read write etc.*/
+int paging_map_range(uint32_t* directory, void* virt, void* phys, int count, int flags)
+{
+    int res = 0;
+
+    //for loop for the cound(number of pages to map)
+    for (int i = 0; i < count; i++)
+    {
+        res = paging_map(directory, virt, phys, flags);     //Maps as many single pages of virtual memory to single pages of physical memory as "counr" says 
+        if (res == 0)
+        {
+            break;                                          //if the functio returns zero (couldnt map) it increments the virtual and phsical addresses by PAGING_PAGE_SIZE and moves on to the next page
+        }
+        virt += PAGING_PAGE_SIZE;
+        phys += PAGING_PAGE_SIZE;
+        
+    }
+
+
+    return res;
 }

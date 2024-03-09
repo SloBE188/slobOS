@@ -22,7 +22,7 @@ struct tss
     uint32_t esi;
     uint32_t edi;
     uint32_t es;        //Segment selector: Teil der Segmentierung.  Die Segmentierung ermöglicht es, den Speicher in verschiedene Segmente aufzuteilen, wobei jedes Segment eine unterschiedliche Rolle spielen kann (z. B. Code, Daten, Stack). Ein Segment Selector ist ein Teil eines Segment-Deskriptors, der verwendet wird, um auf ein bestimmtes Segment im Speicher zuzugreifen.
-    uint32_t cs         //Segment selector: Teil der Segmentierung.  Die Segmentierung ermöglicht es, den Speicher in verschiedene Segmente aufzuteilen, wobei jedes Segment eine unterschiedliche Rolle spielen kann (z. B. Code, Daten, Stack). Ein Segment Selector ist ein Teil eines Segment-Deskriptors, der verwendet wird, um auf ein bestimmtes Segment im Speicher zuzugreifen.
+    uint32_t cs;         //Segment selector: Teil der Segmentierung.  Die Segmentierung ermöglicht es, den Speicher in verschiedene Segmente aufzuteilen, wobei jedes Segment eine unterschiedliche Rolle spielen kann (z. B. Code, Daten, Stack). Ein Segment Selector ist ein Teil eines Segment-Deskriptors, der verwendet wird, um auf ein bestimmtes Segment im Speicher zuzugreifen.
     uint32_t ss;        //Segment selector: Teil der Segmentierung.  Die Segmentierung ermöglicht es, den Speicher in verschiedene Segmente aufzuteilen, wobei jedes Segment eine unterschiedliche Rolle spielen kann (z. B. Code, Daten, Stack). Ein Segment Selector ist ein Teil eines Segment-Deskriptors, der verwendet wird, um auf ein bestimmtes Segment im Speicher zuzugreifen.
     uint32_t ds;        //*
     uint32_t fs;        //*

@@ -110,7 +110,7 @@ char* strcpy(char* dest, const char* src)
     
 }
 
-char* strncpy(char* dest, const char* strc, int count)
+char* strncpy(char* dest, const char* src, int count)
 {
     int i = 0;
     for (i = 0; i < count; i++)
@@ -124,8 +124,5 @@ char* strncpy(char* dest, const char* strc, int count)
         
     }
     
-
-
-
     return dest;
 }
