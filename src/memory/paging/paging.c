@@ -84,7 +84,7 @@ void* paging_align_address(void* ptr)
 // Die Funktion paging_map_to ordnet eine physische Adressbereich einer virtuellen Adresse im Paging-Verzeichnis zu.
 // Sie nimmt ein Verzeichnis (Page Directory), einen virtuellen Startpunkt, einen physischen Startpunkt,
 // ein physisches Endpunkt und Flaggen für die Seiteneigenschaften.
-int paging_map_to(uint32_t *directory, void *virt, void *phys, void *phys_end, int flags)
+int paging_map_to(uint32_t* directory, void* virt, void* phys, void* phys_end, int flags)
 {
 
     int res = 0;

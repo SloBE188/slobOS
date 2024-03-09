@@ -138,3 +138,49 @@ int task_init(struct task* task, struct process* process)
 
     return 0;
 }
+
+
+/*this functions sets the current task to the task i pass in as a parameter and then switches the page directory to the one 
+from that task. after the page directory is switched, the CPU will see the system memory (adressraum) as the task should see it.
+*/
+int task_switch(struct task* task)
+{
+    current_task = task;
+    paging_switch(task->page_directory->directory_entry);
+
+    return 0;
+}
+
+
+
+/*this function serves as the point where the os transitions from kernel mode to user mode to the first user process*/
+void task_run_first_ever_task()
+{
+
+    //check if there is a curr task
+    if (!current_task)
+    {
+        panic("task_run_first_ever_task(): NO CURRENT TASK EXISTS BROO WTF\\n");
+    }
+
+    //switch to the first task in the linked list
+    task_switch(task_head);
+
+    //transition to user mode
+    task_return(&task_head->registers);
+    
+}
+
+
+/*this function starts by switching all the segment/selector registers to point to user land and the calls task_switch to switch the
+current page tables to the current task.
+later this function gets used during interrupt routines to allow me to switch from the kernel context back to user space context.
+this will be essential because sometimes i need to switch the processor to the kernel page tables to access kernel memory(z.B. during a interrupt)
+then i can switch afterwards back to the task page tables with this function. this function can only be used in ring 0. */
+int task_page()
+{
+    user_registers();
+    task_switch(current_task);
+
+    return 0;
+}

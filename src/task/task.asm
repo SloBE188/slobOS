@@ -1,7 +1,8 @@
-[BIOTS 32]
+[BITS 32]
 section .asm
 
 global user_registers
+global task_return
 
 
 ;this label is responsible for updating the CPU's segment registers to user-space selectors defined in the GDT.
@@ -38,12 +39,10 @@ restore_general_purpose_registers:
 
 
 
-
+;void task_return(struct registers* regs);
 ;this label is responsible for forcing the os from kernel land into user land where the CPU will begin executing the user process code.
 ;it simulates the behavior of returning from an interrupt to seamlessly transition the CPU from kernel mode to user mode.
-
 ; Die Funktion task_return ist verantwortlich für den Übergang vom Kernel-Modus in den User-Modus.
-
 task_return:
     ; Sichert den aktuellen Stack Pointer im Base Pointer für lokalen Zugriff im folgenden Code.
     mov ebp, esp
