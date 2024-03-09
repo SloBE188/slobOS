@@ -35,3 +35,47 @@ restore_general_purpose_registers:
     mov ebx, [ebx+12]       ;restore the general purpose registers from the values stored in the struct
     add esp, 4
     ret
+
+
+
+
+;this label is responsible for forcing the os from kernel land into user land where the CPU will begin executing the user process code.
+;it simulates the behavior of returning from an interrupt to seamlessly transition the CPU from kernel mode to user mode.
+
+task_return:
+    mov ebp, esp
+    ;the following lines prepare the stack of iretd instruction
+    ;by pushing segment selectors and other state information
+
+    ;access the structure passed to me
+    mov ebx, bp+4
+
+    ;push the data/stack selector
+    push dword [ebx+44]
+    ;push the stack pointer
+    push dword [ebx+40]
+
+    ;push the flags
+    pushf
+    pop eaxor eax, 0x200
+    push eax
+
+    ;push the code segment
+    push dword [ebx+32]
+
+    ;push the IP(instruction pointer) to execute
+    push dword [ebx+28]
+
+    ;setup some segment registers
+    mov ax, [ebx+44]
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    
+    push dword [ebx+4]
+    call restore_general_purpose_registers
+    add esp, 4
+
+    ;transition into user land!!!!!!!
+    iretd
