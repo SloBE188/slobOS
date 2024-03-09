@@ -44,7 +44,9 @@ struct paging_4gb_chunk* paging_new_4gb(uint8_t flags)
     // Gibt den initialisierten 4-GB-Paging-Chunk zurück.
     return chunk_4gb;
 }
-
+// Die Funktion paging_map_to ordnet eine physische Adressbereich einer virtuellen Adresse im Paging-Verzeichnis zu.
+// Sie nimmt ein Verzeichnis (Page Directory), einen virtuellen Startpunkt, einen physischen Startpunkt,
+// ein physisches Endpunkt und Flaggen für die Seiteneigenschaften.
 int paging_map_to(uint32_t *directory, void *virt, void *phys, void *phys_end, int flags)
 {
 
@@ -79,7 +81,11 @@ int paging_map_to(uint32_t *directory, void *virt, void *phys, void *phys_end, i
     //calculates total bytes between the phys and phys end adresses and converts this in number of pages
     uint32_t total_bytes = phys_end - phys;
     int total_pages = total_bytes / PAGING_PAGE_SIZE;
-    res = paging_map_range(directory, virt, phys, total_pages, flags);
+    
+    // Ruft eine andere Funktion auf, um den Bereich im Verzeichnis tatsächlich zuzuordnen.
+    // Diese Funktion würde das Page Directory aktualisieren, um die virtuelle Adresse
+    // auf den physischen Bereich zu mappen mit der gegebenen Anzahl von Seiten und Flags.
+     res = paging_map_range(directory, virt, phys, total_pages, flags);
 
 out:
     return res;

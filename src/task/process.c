@@ -9,25 +9,27 @@
 #include "fs/file.h"
 #include "kernel.h"
 
-// Globale Variable, die auf den aktuell laufenden Prozess zeigt.
+// Pointer zum aktuell laufenden Prozess
 struct process *current_process = 0;
 
-// Array, das alle Prozesse speichert. Jede Position repräsentiert einen möglichen Prozess-Slot.
+// Array, das alle Prozesse speichert. Jede Position repräsentiert einen möglichen Prozess-Slot. Das Array hat 12 slots (SLOBOS_MAX_PROCESSES)
 static struct process *processes[SLOBOS_MAX_PROCESSES] = {};
 
-// Initialisiert einen Prozess durch Nullsetzen seiner Struktur.
+// Initialisiert einen Prozess durch NULL des Structs mit memset des Prozesses
 static void process_init(struct process *process)
 {
     memset(process, 0, sizeof(struct process));
 }
 
-// Gibt den aktuellen Prozess zurück.
-struct process *current_process()
+// Gibt den aktuellen Prozess zurück, welcher zuletzt auf der CPU executed wurde.
+// Da meine implementation für single core CPU's ist, kann nur ein process aktiv auf der cpu laufen, die anderen prozesse sind dann im "paused" or "waiting" state.
+//FUnktion ist vor allem wichtig wen ein interrupt invoked wurde, damit ich wen der interrupt returned weis von welchem process der interrupt war.
+struct process *process_current()
 {
     return current_process;
 }
 
-// Holt einen Prozess anhand seiner ID.
+// Holt einen Prozess anhand seiner ID (param)
 struct process *process_get(int process_id)
 {
     // Prüft, ob die angegebene ID gültig ist.
@@ -40,7 +42,7 @@ struct process *process_get(int process_id)
     return processes[process_id];
 }
 
-// Lädt ein Programm/Binary von einem Dateisystem in den Speicher.
+// Lädt ein Binary programm von einem Dateisystem (fat16) in den memory.
 static int process_load_binary(const char* filename, struct process *process)
 {
     int res = 0;
@@ -59,7 +61,7 @@ static int process_load_binary(const char* filename, struct process *process)
         goto out;
     }
 
-    // Reserviert Speicher für das Programm.
+    // Reserviert Speicher für den process/programm.
     void *program_data_ptr = kzalloc(stat.filesize);
 
     if (!program_data_ptr)
@@ -68,14 +70,15 @@ static int process_load_binary(const char* filename, struct process *process)
         goto out;
     }
 
-    // Liest das Programm in den zuvor reservierten Speicher.
+    // Liest das Programm in den zuvor reservierten Speicher (program_data_ptr).
     if (fread(program_data_ptr, stat.filesize, 1, fd) != 1)
     {
         res = -EIO;
         goto out;
     }
     
-    // Speichert den Zeiger und die Größe des Programms im Prozess-Objekt.
+    // hier wird der gemacht, dass die variable "ptr"(physical pointer to the beginning of the process in memory) auf 
+    // den startpunkt der zuvor geladenen data vom process zeigt. 
     process->ptr = program_data_ptr;
     process->size = stat.filesize;
 
@@ -85,7 +88,7 @@ out:
     return res;
 }
 
-// Wrapper-Funktion, die das Laden von Binärdaten eines Programms behandelt.
+// Wrapper function for process_load_binary
 static int process_load_data(const char *filename, struct process *process)
 {
     int res = 0;
@@ -93,7 +96,9 @@ static int process_load_data(const char *filename, struct process *process)
     return res;
 }
 
-// Karte das geladene Programm in den virtuellen Adressraum des Prozesses.
+/*Diese Funktion lädt das mit process_load_binary geladene binary file in den virtual memory. Bei mir heisst das das diese Funktion
+alle user processes in den virtual memory (starting from 0x400000(#define SLOBOS_PROGRAM_VIRTUAL_ADDRESS 0x400000 )) geladen werdem.
+Das bedeutet, dass jeder Process dann seinen eigenen Adressraum hat und nur seinen eigenen Adressraum(4gb) sieht.*/
 int process_map_binary(struct process *process)
 {
     int res = 0;
@@ -105,7 +110,7 @@ int process_map_binary(struct process *process)
     return res;
 }
 
-// Wrapper-Funktion, die das Mapping des Programm-Speichers durchführt.
+// Wrapper function for process_map_binary
 int process_map_memory(struct process *process)
 {
     int res = 0;
@@ -113,7 +118,11 @@ int process_map_memory(struct process *process)
     return res;
 }
 
-// Lädt und initialisiert einen Prozess für einen gegebenen Slot.
+// Lädt und initialisiert einen Prozess für einen mit param "process_slot" gegebenen Slot also im array processes was ganz oben definiert ist.
+// Mit dem einfügen eines processes in den gegebenen slot wird auch möglich gemacht, das man zum beispiel mit einem key auf dem keyboard
+// z.B. "F2" einen process in den process slot beim array "processes" in den slot 2 laden könnte
+// Die funktion allocated auch memory für den prozess.
+// EIgentlich bringt diese Funktion alle zuvor erstellten funktionen zusammen.
 int process_load_for_slot(const char *filename, struct process **process, int process_slot)
 {
     int res = 0;
