@@ -34,6 +34,9 @@ struct task
     // The registers of the task when the task is not running (other task runs with task switching)
     struct registers registers;
 
+    //The process which owns the task HEEHEEHEEHAA
+    struct process* process;
+
     // The next task in the linked list
     struct task* next;
 
@@ -41,7 +44,7 @@ struct task
     struct task* prev;
 };
 
-struct task* task_new();
+struct task* task_new(struct process* process);
 struct task* task_current();
 struct task* task_get_next();
 int task_free(struct task* task);

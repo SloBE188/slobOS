@@ -3,6 +3,7 @@
 #include "status.h"
 #include "memory/heap/kheap.h"
 #include "memory/memory.h"
+#include "process.h"
 
 // Globale Variable, die auf den aktuell laufenden Task zeigt.
 struct task* current_task = 0;
@@ -12,7 +13,7 @@ struct task* task_tail = 0; //Endpunkt (Schwanz) der Liste (zeigt auf den letzte
 struct task* task_head = 0; //Anfangspunkt(Kopf) der Liste (zeigt auf den ersten Task)
 
 // Prototyp für die Initialisierungsfunktion eines Tasks.
-int task_init(struct task* task);
+int task_init(struct task* task, struct process* process);
 
 // Gibt den aktuell laufenden Task zurück.
 struct task* task_current()
@@ -21,7 +22,7 @@ struct task* task_current()
 }
 
 // Erstellt einen neuen Task und initialisiert ihn.
-struct task* task_new()
+struct task* task_new(struct process* process)
 {
     int res = 0;
     struct task* task = kzalloc(sizeof(struct task));
@@ -33,7 +34,7 @@ struct task* task_new()
     }
 
     // Initialisiere den Task.
-    res = task_init(task);
+    res = task_init(task, process);
     // Bei Fehlschlag, beende.
     if (res != SLOBOS_ALL_OK)
     {
@@ -117,7 +118,7 @@ int task_free(struct task* task)
 }
 
 // Initialisiert einen Task.
-int task_init(struct task* task)
+int task_init(struct task* task, struct process* process)
 {
     // Setze den Speicherbereich des Tasks auf 0.
     memset(task, 0, sizeof(struct task));
@@ -133,6 +134,7 @@ int task_init(struct task* task)
     task->registers.ip = SLOBOS_PROGRAM_VIRTUAL_ADDRESS;
     task->registers.ss = USER_DATA_SEGMENT;
     task->registers.esp = SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
+    task->process = process;
 
     return 0;
 }
