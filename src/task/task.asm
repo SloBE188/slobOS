@@ -4,7 +4,7 @@ section .asm
 global user_registers
 
 
-;this label is responsible for updating the CPU's segment registers to user the user-space selectors defined in the GDT.
+;this label is responsible for updating the CPU's segment registers to user-space selectors defined in the GDT.
 ;the GDT serves as a central repository that describes various memory segments accessible to the processor.
 ;Each selector in the GDT corresponds to a specific segment with its own set of permissions and attributes.
 ;In this context, the 0x23 selector is designed to describe a user-space data segment. It is desinctly seperate from the selectors
@@ -42,40 +42,52 @@ restore_general_purpose_registers:
 ;this label is responsible for forcing the os from kernel land into user land where the CPU will begin executing the user process code.
 ;it simulates the behavior of returning from an interrupt to seamlessly transition the CPU from kernel mode to user mode.
 
+; Die Funktion task_return ist verantwortlich für den Übergang vom Kernel-Modus in den User-Modus.
+
 task_return:
+    ; Sichert den aktuellen Stack Pointer im Base Pointer für lokalen Zugriff im folgenden Code.
     mov ebp, esp
-    ;the following lines prepare the stack of iretd instruction
-    ;by pushing segment selectors and other state information
 
-    ;access the structure passed to me
-    mov ebx, bp+4
+    ; Zugriff auf die Struktur, die die CPU-Register und Zustände enthält, indem der Pointer darauf in EBX geladen wird.
+    ; BP+4 ist der Ort, wo der Pointer auf die Registerstruktur übergeben wird.
+    mov ebx, [ebp+4]
 
-    ;push the data/stack selector
+    ; Pushen des User-Modus Stack-Segment-Selectors in den Stack.
+    ; Dieser Wert wird von der Registerstruktur geladen (offset 44).
     push dword [ebx+44]
-    ;push the stack pointer
+
+    ; Pushen des User-Modus Stack Pointer in den Stack.
+    ; Dieser Wert wird von der Registerstruktur geladen (offset 40).
     push dword [ebx+40]
 
-    ;push the flags
+    ; Speichern der aktuellen Flags in EAX, Anpassen um das Interrupt-Flag zu setzen,
+    ; und dann die modifizierten Flags auf den Stack pushen.
     pushf
-    pop eaxor eax, 0x200
+    pop eax
+    or eax, 0x200  ; IF (Interrupt Flag) setzen
     push eax
 
-    ;push the code segment
+    ; Pushen des Code-Segment-Selectors für den User-Modus auf den Stack.
     push dword [ebx+32]
 
-    ;push the IP(instruction pointer) to execute
+    ; Pushen des Instruction Pointers (IP), um die Ausführung fortzusetzen.
     push dword [ebx+28]
 
-    ;setup some segment registers
-    mov ax, [ebx+44]
+    ; Setup der Segment-Register für den User-Modus.
+    ; Der DS, ES, FS, und GS Register werden mit dem User-Modus Datensegment-Selektor geladen.
+    mov ax, [ebx+44]  ; Datensegment-Selektor aus der Registerstruktur laden.
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
     
+    ; Ruft die Funktion auf, die die allgemeinen Register aus der Struktur wiederherstellt.
+    ; [ebx+4] ist der Pointer auf die Registerwerte.
     push dword [ebx+4]
     call restore_general_purpose_registers
-    add esp, 4
+    add esp, 4  ; Bereinigt den Stack nach dem Funktionsaufruf.
 
-    ;transition into user land!!!!!!!
+    ; Führt den Übergang in den User-Modus aus: Die iretd Anweisung setzt CS, EIP, EFLAGS,
+    ; sowie Stack-Pointer (ESP) und Stack-Segment (SS) aus den Werten, die auf dem Stack liegen.
+    ; Nach iretd wird der Code im User-Modus bei der Adresse fortgesetzt, die in EIP gespeichert ist.
     iretd
