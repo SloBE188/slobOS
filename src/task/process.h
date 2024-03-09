@@ -34,6 +34,13 @@ struct process
 };
 
 
+/*
+*filename: representing the name of the file from which nthe process will be loaded
+**process: a pointer to a pointer to a struct process, where the loaded processs details will be stored
+process_slot: the index of the process in the processes array*/
+int process_load_for_slot(const char *filename, struct process **process, int process_slot);
+
+
 
 
 

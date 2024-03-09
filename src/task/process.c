@@ -21,6 +21,7 @@ static void process_init(struct process *process)
     memset(process, 0, sizeof(struct process));
 }
 
+
 // Gibt den aktuellen Prozess zurück, welcher zuletzt auf der CPU executed wurde.
 // Da meine implementation für single core CPU's ist, kann nur ein process aktiv auf der cpu laufen, die anderen prozesse sind dann im "paused" or "waiting" state.
 //FUnktion ist vor allem wichtig wen ein interrupt invoked wurde, damit ich wen der interrupt returned weis von welchem process der interrupt war.
@@ -62,7 +63,7 @@ static int process_load_binary(const char* filename, struct process *process)
     }
 
     // Reserviert Speicher für den process/programm.
-    void *program_data_ptr = kzalloc(stat.filesize);        //->kernel sieht direkt diese adresse von kzalloc zurückgegeben
+    void *program_data_ptr = kzalloc(stat.filesize);        //->kernel sieht direkt diese adresse von kzalloc zurückgegeben.
 
     if (!program_data_ptr)
     {
@@ -204,4 +205,42 @@ out:
     }
     
     return res;
+}
+/*this function loops threw the processes array and searches for a free slot. if it finds it. it returns its index.
+if not, it shows a error(EISTKN)*/
+int process_get_free_slot()
+{
+    //Loop threw each slot in the "processes" array
+    for (int i = 0; i < SLOBOS_MAX_PROCESSES; i++)
+    {
+        // if i find a empty (null because i memset it by the process_init) slot, return its index
+        if (processes[i] == 0)
+        {
+            return i;
+        }
+        
+    }
+    
+    //if it reaches this point here in the function this means that all slots are taken and i have to return a error code to signify that no slot is available.
+    return -EISTKN;
+}
+
+/*this function loads a process from a file with his filename HEHE NICE*/
+int process_load(const char* filename, struct process** process)
+{
+    int res = 0;
+
+    //find the next free slot for a new process
+    int process_slot = process_get_free_slot();
+
+    //if no free slot is found, return error
+    if (process_slot < 0)
+    {
+        res = -EISTKN;
+        goto out;
+    }
+
+    //Load the process into the free slot
+    res = process_load_for_slot(filename, process, process_slot);
+    
 }
