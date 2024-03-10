@@ -34,7 +34,7 @@ restore_general_purpose_registers:
     mov ecx, [ebx+20]       ;restore the general purpose registers from the values stored in the struct
     mov eax, [ebx+24]       ;restore the general purpose registers from the values stored in the struct
     mov ebx, [ebx+12]       ;restore the general purpose registers from the values stored in the struct
-    add esp, 4
+    add ebp, 4
     ret
 
 
@@ -82,7 +82,7 @@ task_return:
     
     ; Ruft die Funktion auf, die die allgemeinen Register aus der Struktur wiederherstellt.
     ; [ebx+4] ist der Pointer auf die Registerwerte.
-    push dword [ebx+4]
+    push dword [ebp+4]
     call restore_general_purpose_registers
     add esp, 4  ; Bereinigt den Stack nach dem Funktionsaufruf.
 
