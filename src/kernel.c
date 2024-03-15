@@ -92,6 +92,19 @@ void panic(const char* msg)
     
 }
 
+
+/*This function is designed to swap the currently active page tables from the user process back to the kernels own page tables &
+restore the processors segment registers to the kernel one*/
+void kernel_page()
+{
+
+    //Call the kerne_registers functione
+    kernel_registers();
+
+    //invoke the paging_switch function to switch to the kernels page tables
+    paging_switch(kernel_chunk);
+}
+
 //GDT
 struct tss tss;
 struct gdt gdt_real[SLOBOS_TOTAL_GDT_SEGMENTS];         //mal recherchieren 

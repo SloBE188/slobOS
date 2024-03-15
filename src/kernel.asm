@@ -4,6 +4,7 @@
 
 global _start
 global problem
+global kernel_registers
 
 extern kernel_main
 
@@ -40,6 +41,16 @@ _start:
     call kernel_main
     jmp $
 
+
+; this label restores the processors segment registers to kernel land GDT selector offsets without invoking this label the
+; processor would continue operating under user process selectors as defined in the GDT (privileges = security problem
+kernel_registers:
+    mov ax, 10
+    mov ds, ax
+    mov es, ax
+    mov gs, ax
+    mov fs, ax
+    ret
 
 
 times 512- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
