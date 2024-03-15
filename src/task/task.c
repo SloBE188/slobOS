@@ -4,6 +4,7 @@
 #include "memory/heap/kheap.h"
 #include "memory/memory.h"
 #include "process.h"
+#include "idt/idt.h"
 
 // Globale Variable, die auf den aktuell laufenden Task zeigt.
 struct task* current_task = 0;
@@ -188,4 +189,38 @@ int task_page()
     task_switch(current_task);
 
     return 0;
+}
+
+/*this function is a task handling function that saves the salvaged user space regs into the running task structure*
+so it is responsible for taking a inerrupt frame and setting all thje regs in our task structure to equal the regs of the frame, thus saving the state
+of the task regs for easy access for the kernel*/
+void task_save_state(struct task *task, struct interrupt_frame *frame)
+{
+    task->registers.ip = frame->ip;
+    task->registers.cs = frame->cs;
+    task->registers.flags = frame->flags;
+    task->registers.esp = frame->esp;
+    task->registers.ss = frame->ss;
+    task->registers.eax = frame->eax;
+    task->registers.ebp = frame->ebp;
+    task->registers.ebx = frame->ebx;
+    task->registers.ecx = frame->ecx;
+    task->registers.edi = frame->edi;
+    task->registers.edx = frame->edx;
+    task->registers.esi = frame->esi;
+}
+
+
+//this function is responsible for saving the state of the currently running task (current task = last running task)
+void task_current_save_state(struct interrupt_frame *frame)
+{
+
+    if (!task_current)
+    {
+        panic("No current task to save\n");
+    }
+    
+    struct task *task = task_current();
+    task_save_state(task, frame);
+
 }

@@ -2,6 +2,7 @@
 #include "config.h"
 #include "memory/memory.h"
 #include "io/io.h"
+#include "task/task.h"
 
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
@@ -11,6 +12,34 @@ struct idtr_desc idtr_descriptor;
 extern void idt_load (struct idtr_desc* ptr);
 extern void int21h();
 extern void no_interrupt();
+
+/*This function is responsible for handling all interrupt 0x80 commands*/
+void isr80h_handle_command(int command, struct interrupt_frame *frame)
+{
+
+}
+
+
+/*
+int command: this is the command specified in the EAX register of the user process before the process called interrupt 80.
+This command represents what the kernerl should do, for example 1 represents printing a message to the screen
+frame: the interrupt frame that points to the memory containing the user processses segment and general purpose registers.
+
+So the function perfroms following steps:
+1. it switches to the kernel page tables so that the memory is viewed from the kernels perspective.
+2. then it saves the registers from the the currently running task(current_task) und speichert sie mit der task_current_save_state in die struktur interrupt_frame
+was dem kernel zugriff darauf gibt.
+3. dann callt es die isr80h_handle_command funktion welche dafür verantwortlich ist den command im EAX register (int command) auszuführen.
+4. am ende wird das page directory mit task_page zurück zum page directory des tasks vom user process welcher den interrupt 0x80 invoked hat gewechselt*/
+void* isr80h_handler(int command, struct inerrupt_frame *frame)
+{
+    void* res = 0;
+    kernel_page();
+    task_current_save_state(frame);
+    res = isr80h_handle_command(command, frame);
+    task_page();
+    return res;
+}
 
 
 //This handler wil print "Keyboard pressed" whenever a krey gets pressed
