@@ -3,6 +3,7 @@ section .asm
 ;das c funktionen von idt.c verwendet werden können
 extern int21h_handler
 extern no_interrupt_handler
+extern isr80h_handler
 
 ;macht die labels von aussen erreichbar (C)
 global int21h
@@ -10,6 +11,7 @@ global idt_load
 global no_interrupt
 global enable_interrupts
 global disable_interrupts
+global isr80h_wrapper
 
 ;enables interrupts
 enable_interrupts:
@@ -45,18 +47,61 @@ idt_load:
 ;stellt dann den Prozessorzustand wieder her, aktiviert die interrupts wieder
 ;und kehrt dann aus der interrupt-behandlung zurück (iret)
 int21h:
-    cli     ;deaktiviert interrupts
     pushad  ;sichert den aktuellen Prozessorzustand
     call int21h_handler ;ruft interrupt handler (in c geschrieben in idt.c) auf
     popad   ;stellt den alten Prozessorzustand wieder her
-    sti     ;aktiviert interrupts
     iret    ;kehrt aus der interrupt behandlung zurück
 
 ;Ist eine ISR für den interrupt "no_interrupt"
 no_interrupt:
-    cli
     pushad
     call no_interrupt_handler
     popad
-    sti
     iret
+
+
+
+
+;this asm label is the entry point for the interrupt ox80 and is responsible for transferring control to our C code where the request (int command)
+;will be processed and once complete this asm label will return to the calling user process.
+isr80h_wrapper:
+    ;INTERRUPT FRAME START
+    ;ALREADY PUSHED BY THE PROCESSOR UPON:
+    ;uint32_t ip
+    ;uint32_t cs
+    ;uint32_t flags
+    ;uint32_t sp
+    ;uint32_t ss
+
+    ;pushes the general purpose registers (in c the structure interrupt_frame) to the stack (the general purpose registers dont get pushed to the stack automaticly)
+    pushad
+
+    ;INTERRUPT FRAME END
+
+    ;push the stack pointer so it points to the interrupt frame (now the isr80h_handler has full acces to the general purpose registers and segment registers that were pushed on the stack).
+    ;it uses the struct inerrupt_frame to access all those individual registers
+    push esp
+
+    ;EAX hold the command so push it to the stack for the isr80h_handler so it the handler knows which command it has to execute (command in the EAX reg)
+    ; inside here (tmp_res) is stored the return result from the isr80h_handler so the result from the command as a example print command (int command 1)
+    ; then the result gets moved back to the eax registrer
+
+    push eax
+    call isr80h_handler
+    mov dword[tmp_res], eax
+    add esp, 8
+
+
+    ;RETURN FROM INTERRUPT
+    ;restore general purpose registers
+    popad
+
+
+    mov eax, [tmp_res]
+
+    ;return from the interrupt, restoring the original state of the flags,cs and ip from the stack
+    iretd
+
+    section .data
+    ;inside here is stored the return result from isr80h_handler
+    tmp_res: dd 0

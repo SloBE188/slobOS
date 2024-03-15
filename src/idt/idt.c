@@ -2,7 +2,6 @@
 #include "config.h"
 #include "memory/memory.h"
 #include "io/io.h"
-#include "task/task.h"
 
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
@@ -14,7 +13,7 @@ extern void int21h();
 extern void no_interrupt();
 
 /*This function is responsible for handling all interrupt 0x80 commands*/
-void isr80h_handle_command(int command, struct interrupt_frame *frame)
+void isr80h_handle_command(int command, struct interrupt_frame* frame)
 {
 
 }
@@ -31,7 +30,7 @@ So the function perfroms following steps:
 was dem kernel zugriff darauf gibt.
 3. dann callt es die isr80h_handle_command funktion welche dafür verantwortlich ist den command im EAX register (int command) auszuführen.
 4. am ende wird das page directory mit task_page zurück zum page directory des tasks vom user process welcher den interrupt 0x80 invoked hat gewechselt*/
-void* isr80h_handler(int command, struct inerrupt_frame *frame)
+void* isr80h_handler(int command, struct interrupt_frame* frame)
 {
     void* res = 0;
     kernel_page();
