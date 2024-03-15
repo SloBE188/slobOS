@@ -153,7 +153,8 @@ int task_switch(struct task* task)
 
 
 
-/*this function serves as the point where the os transitions from kernel mode to user mode to the first user process*/
+/*this function serves as the point where the os transitions from kernel mode to user mode to the first user process. its simply the go to function
+for starting the first activity that the user want to run (task)*/
 void task_run_first_ever_task()
 {
 
