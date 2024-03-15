@@ -46,6 +46,7 @@ struct task* task_new(struct process* process)
     {
         task_head = task;
         task_tail = task;
+        current_task = task;
         goto out;
     }
 
@@ -130,11 +131,13 @@ int task_init(struct task* task, struct process* process)
         return -EIO;
     }
 
-    // Initialisiere Register (IP, SS, und ESP) für den Task.
+    // Initialisiere Register (IP, SS, CS und ESP) für den Task.
     task->registers.ip = SLOBOS_PROGRAM_VIRTUAL_ADDRESS;
     task->registers.ss = USER_DATA_SEGMENT;
+    task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;
     task->process = process;
+    
 
     return 0;
 }
@@ -154,7 +157,8 @@ int task_switch(struct task* task)
 
 
 /*this function serves as the point where the os transitions from kernel mode to user mode to the first user process. its simply the go to function
-for starting the first activity that the user want to run (task)*/
+for starting the first activity that the user want to run (task).
+so it switches to the first task in the linked list and executes it*/
 void task_run_first_ever_task()
 {
 

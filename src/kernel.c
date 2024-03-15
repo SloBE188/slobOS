@@ -14,6 +14,9 @@
 #include "gdt/gdt.h"
 #include "config.h"
 #include "task/tss.h"
+#include "task/task.h"
+#include "task/process.h"
+#include "status.h"
 
 uint16_t *video_mem = 0;
 uint16_t terminal_row = 0;
@@ -173,7 +176,7 @@ void kernel_main()
     */
 
     //Enable Interrupts
-    enable_interrupts();
+    //enable_interrupts();
 
 
 
@@ -188,6 +191,8 @@ void kernel_main()
 
 
 
+    /*
+    FILESYSTEM TESTING
     int fd = fopen("0:/hello.txt", "r");
     if (fd)
     {
@@ -197,8 +202,29 @@ void kernel_main()
         fread(buf, 11, 1, fd);
         buf[13] = 0x00;
         print(buf);
+    }*/
+
+
+
+    struct process* process = 0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != SLOBOS_ALL_OK)
+    {
+        panic("Failed to load blank.bin\n");
     }
+
+    //switches to the first task in the linked list and executes it
+    task_run_first_ever_task();
+
     while(1) {}
+
+    /*NO CODE BELOW HERE WILL BE RUN ABTER THE ABOVE FUNCTION CALL IM EXECUTING IN
+    USER LAND THE USER PROCESS UNTIL AN INTERRUPT OCCURS*/
+    
+
+
+
+
 
     
 
