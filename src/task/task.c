@@ -149,7 +149,7 @@ from that task. after the page directory is switched, the CPU will see the syste
 int task_switch(struct task* task)
 {
     current_task = task;
-    paging_switch(task->page_directory->directory_entry);
+    paging_switch(task->page_directory);
 
     return 0;
 }
@@ -162,7 +162,7 @@ so it switches to the first task in the linked list and executes it*/
 void task_run_first_ever_task()
 {
 
-    //check if there is a curr task
+    //check if there is no curr task
     if (!current_task)
     {
         panic("task_run_first_ever_task(): NO CURRENT TASK EXISTS BROO WTF\\n");

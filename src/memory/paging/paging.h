@@ -25,7 +25,7 @@ struct paging_4gb_chunk
 };
 
 struct paging_4gb_chunk* paging_new_4gb(uint8_t flags);     //create a new 4gb chunk wioth specified flags
-void paging_switch(uint32_t* directory);                    //to switch to a diffrent page directory
+void paging_switch(struct paging_4gb_chunk* directory);                    //to switch to a diffrent page directory
 void enable_paging();                                       //enable paging
 
 int paging_set(uint32_t* directory, void* virt, uint32_t val);
@@ -35,9 +35,9 @@ uint32_t* paging_4gb_chunk_get_directory(struct paging_4gb_chunk* chunk);   //to
 void paging_free_4gb(struct paging_4gb_chunk* chunk);
 
 //functiont to manage virtual to physical address mappings
-int paging_map_to(uint32_t* directory, void* virt, void* phys, void* phys_end, int flags);
-int paging_map_range(uint32_t* directory, void* virt, void* phys, int count, int flags);
-int paging_map(uint32_t* directory, void* virt, void* phys, int flags);    //this function will map a single page in virtual address space to a singe page in the physical address space in a give page directory
+int paging_map_to(struct paging_4gb_chunk *directory, void* virt, void* phys, void* phys_end, int flags);
+int paging_map_range(struct paging_4gb_chunk* directory, void* virt, void* phys, int count, int flags);
+int paging_map(struct paging_4gb_chunk* directory, void* virt, void* phys, int flags);    //this function will map a single page in virtual address space to a singe page in the physical address space in a give page directory
 void* paging_align_addresses(void *ptr);
 
 #endif

@@ -148,7 +148,7 @@ void kernel_main()
 
     //Switch to kernel paging chunk so that the processor follows the kernel paging directory
     //Hier wechsle ich in das page directory von "kernel_chunk". ich könnte mit der paging switch funktion auch in andere paging directorys von zum beispiel anderen prozessen wechseln
-    paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
+    paging_switch(kernel_chunk);
 
     /*PAGING TESTING
     char* ptr = kzalloc(4096);
