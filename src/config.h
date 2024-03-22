@@ -41,6 +41,9 @@
 
 
 
+//int0x80
+#define SLOBOS_MAX_ISR80H_COMMANDS 1024
+
 #define USER_DATA_SEGMENT 0x23  //data segment for user land
 #define USER_CODE_SEGMENT 0x1b  //code segment for user land
 

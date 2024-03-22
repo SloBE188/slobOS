@@ -4,6 +4,16 @@
 #include <stdint.h>
 #include "kernel.h"
 
+
+
+struct interrupt_frame;
+
+//function pointer für die verschiedenen Funktionen für die Commands von int0x80. Man könnte auch ein Switch case brauchen,
+//das würde aber sehr unschön werden und wäre kein "cLeAn CoDe"
+typedef void*(*ISR80H_COMMAND)(struct interrupt_frame* frame);
+
+
+
 //representing a single interrupt in our interrupt descriptor table, jeder eintrag (entry) in der idt ist jeweils 8 bytes lang
 struct idt_desc
 {
@@ -24,7 +34,7 @@ struct idtr_desc
 }__attribute__((packed));
 
 
-//C structure for the general purpose registers (label in asm (task.asm))
+//C structure for the general purpose registers (label in asm (task.asm)). this structure is easy accesible for the kernel
 struct interrupt_frame
 {
     uint32_t edi;
@@ -41,6 +51,8 @@ struct interrupt_frame
     uint32_t esp;
     uint32_t ss;
 } __attribute__((packed));
+
+
 
 
 

@@ -191,9 +191,8 @@ int task_page()
     return 0;
 }
 
-/*this function is a task handling function that saves the salvaged user space regs into the running task structure*
-so it is responsible for taking a inerrupt frame and setting all thje regs in our task structure to equal the regs of the frame, thus saving the state
-of the task regs for easy access for the kernel*/
+/*this function is a task handling function that saves the salvaged user space regs from the task structure to the interrupt_frame structure
+thus saving the state from a task for easy access for the kernel because the kernel can easy access the interrupt_frame structure*/
 void task_save_state(struct task *task, struct interrupt_frame *frame)
 {
     task->registers.ip = frame->ip;
