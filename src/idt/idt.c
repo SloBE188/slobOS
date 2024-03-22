@@ -2,19 +2,62 @@
 #include "config.h"
 #include "memory/memory.h"
 #include "io/io.h"
+#include "task/task.h"
 
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
+
+//Command Array for int0x80
+static ISR80H_COMMAND isr80h_commands[SLOBOS_MAX_ISR80H_COMMANDS];
 
 
 //import asm functions
 extern void idt_load (struct idtr_desc* ptr);
 extern void int21h();
 extern void no_interrupt();
+extern void isr80h_wrapper();
+
+
+/*This function will simply register command functions and bind the command number (command_id) to the function pointer specified in the
+command variable. After the registration is completed the command can be executed through the user process by specyfying the
+command_id into the EAX reg :))))*/
+void isr80h_register_command(int command_id, ISR80H_COMMAND command)
+{
+    if (command_id < 0 || command_id >= SLOBOS_MAX_ISR80H_COMMANDS)
+    {
+        panic("The OS has no more commands free (SLOBOS_MAX_ISR80H_COMMANDS)\n");
+    }
+    if (isr80h_commands[command_id])
+    {
+        panic("Youre attempting to overwrite a existing commands\n")
+    }
+
+    isr80h_commands[command_id] = command;
+    
+    
+}
+
 
 /*This function is responsible for handling all interrupt 0x80 commands*/
 void isr80h_handle_command(int command, struct interrupt_frame* frame)
 {
+    void* result = 0;
+    if (command < 0 || command >= SLOBOS_MAX_ISR80H_COMMANDS)
+    {
+        //Invalid commmand brother
+        return 0;
+    }
+    
+    ISR80H_COMMAND command_func = isr80h_commands[command];
+
+    if (!command_func)
+    {
+        return 0;
+    }
+
+
+    result = command_func;
+    return result;    
 
 }
 
@@ -105,8 +148,14 @@ void idt_init()
     int21h is in the src/idt/idt.asm file*/
     idt_set(0x21, int21h);
 
+
+
+    //Interrupt 0x80 (userland) get maped. So the isr80h_wrapper function gets called when interrupt (0x80) get called through userland
+    idt_set(0x80, isr80h_wrapper);
+
     //Load the interrupt descriptor table
     idt_load(&idtr_descriptor);
 
 }
+
 

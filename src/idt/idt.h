@@ -53,11 +53,12 @@ struct interrupt_frame
 } __attribute__((packed));
 
 
-
+void isr80h_register_command(int command_id, ISR80H_COMMAND command);
 
 
 void idt_init();
 void enable_interrupts();
 void disable_interrupts();
+
 
 #endif
