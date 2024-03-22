@@ -9,6 +9,4 @@ enum SystemCommands
     SYSTEM_COMMAND1_PRINT,      //eax 1
 };
 
-void isr80h_register_commands();
-
 #endif
