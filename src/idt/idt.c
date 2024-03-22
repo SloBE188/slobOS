@@ -38,7 +38,9 @@ void isr80h_register_command(int command_id, ISR80H_COMMAND command)
 }
 
 
-/*This function is responsible for handling all interrupt 0x80 commands*/
+/*This function is responsible for handling all interrupt 0x80 commands.
+Die Funktion überoprüft zuerst, ob der command (index davon) gültig ist, dann wird die richtige funktion
+für den interrupt (systemaufruf weil es aus dem userland kommt) command_func zugewiesen, welche dann bearbeitet werden kann.*/
 void isr80h_handle_command(int command, struct interrupt_frame* frame)
 {
     void* result = 0;
@@ -56,7 +58,7 @@ void isr80h_handle_command(int command, struct interrupt_frame* frame)
     }
 
 
-    result = command_func;
+    result = command_func(frame);
     return result;    
 
 }
