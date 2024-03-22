@@ -2,6 +2,7 @@
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "idt.h": "c",
-        "kheap.h": "c"
+        "kheap.h": "c",
+        "kernel.h": "c"
     }
 }

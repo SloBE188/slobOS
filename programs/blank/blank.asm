@@ -1,13 +1,16 @@
 [BITS 32]
+
 section .asm
 
 global _start
 
-
 _start:
-    push 20         ;push 20 to the tasks stack
-    push 30         ;push 30 to the tasks stack
-    mov eax, 0      ;Command 0 (SUM)
+
+    push message
+    mov eax, 1 ; Command print
     int 0x80
-    add esp, 8      ;Restore the stack pointer
+    add esp, 4
     jmp $
+
+section .data
+message: db 'I can talk with the kernel!', 0
