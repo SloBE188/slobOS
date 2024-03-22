@@ -18,72 +18,6 @@ extern void no_interrupt();
 extern void isr80h_wrapper();
 
 
-/*This function will simply register command functions and bind the command number (command_id) to the function pointer specified in the
-command variable. After the registration is completed the command can be executed through the user process by specyfying the
-command_id into the EAX reg :))))*/
-void isr80h_register_command(int command_id, ISR80H_COMMAND command)
-{
-    if (command_id < 0 || command_id >= SLOBOS_MAX_ISR80H_COMMANDS)
-    {
-        panic("The OS has no more commands free (SLOBOS_MAX_ISR80H_COMMANDS)\n");
-    }
-    if (isr80h_commands[command_id])
-    {
-        panic("Youre attempting to overwrite a existing commands\n")
-    }
-
-    isr80h_commands[command_id] = command;
-    
-    
-}
-
-
-/*This function is responsible for handling all interrupt 0x80 commands.
-Die Funktion überoprüft zuerst, ob der command (index davon) gültig ist, dann wird die richtige funktion
-für den interrupt (systemaufruf weil es aus dem userland kommt) command_func zugewiesen, welche dann bearbeitet werden kann.*/
-void isr80h_handle_command(int command, struct interrupt_frame* frame)
-{
-    void* result = 0;
-    if (command < 0 || command >= SLOBOS_MAX_ISR80H_COMMANDS)
-    {
-        //Invalid commmand brother
-        return 0;
-    }
-    
-    ISR80H_COMMAND command_func = isr80h_commands[command];
-
-    if (!command_func)
-    {
-        return 0;
-    }
-
-
-    result = command_func(frame);
-    return result;    
-
-}
-
-
-/*
-int command: this is the command specified in the EAX register of the user process before the process called interrupt 80.
-This command represents what the kernerl should do, for example 1 represents printing a message to the screen
-frame: the interrupt frame that points to the memory containing the user processses segment and general purpose registers.
-
-So the function perfroms following steps:
-1. it switches to the kernel page tables so that the memory is viewed from the kernels perspective.
-2. then it saves the registers from the the currently running task(current_task) und speichert sie mit der task_current_save_state in die struktur interrupt_frame
-was dem kernel zugriff darauf gibt.
-3. dann callt es die isr80h_handle_command funktion welche dafür verantwortlich ist den command im EAX register (int command) auszuführen.
-4. am ende wird das page directory mit task_page zurück zum page directory des tasks vom user process welcher den interrupt 0x80 invoked hat gewechselt*/
-void* isr80h_handler(int command, struct interrupt_frame* frame)
-{
-    void* res = 0;
-    kernel_page();
-    task_current_save_state(frame);
-    res = isr80h_handle_command(command, frame);
-    task_page();
-    return res;
-}
 
 
 //This handler wil print "Keyboard pressed" whenever a krey gets pressed
@@ -160,4 +94,68 @@ void idt_init()
 
 }
 
+/*This function will simply register command functions and bind the command number (command_id) to the function pointer specified in the
+command variable. After the registration is completed the command can be executed through the user process by specyfying the
+command_id into the EAX reg :))))*/
+void isr80h_register_command(int command_id, ISR80H_COMMAND command)
+{
+    if (command_id < 0 || command_id >= SLOBOS_MAX_ISR80H_COMMANDS)
+    {
+        panic("The OS has no more commands free (SLOBOS_MAX_ISR80H_COMMANDS)\n");
+    }
+    if (isr80h_commands[command_id])
+    {
+        panic("Youre attempting to overwrite a existing commands\n");
+    }
 
+    isr80h_commands[command_id] = command;
+    
+    
+}
+
+
+/*This function is responsible for handling all interrupt 0x80 commands.
+Die Funktion überoprüft zuerst, ob der command (index davon) gültig ist, dann wird die richtige funktion
+für den interrupt (systemaufruf weil es aus dem userland kommt) command_func zugewiesen, welche dann bearbeitet werden kann von der 
+funktion dafür.*/
+void* isr80h_handle_command(int command, struct interrupt_frame* frame)
+{
+    void* result = 0;
+
+    if(command < 0 || command >= SLOBOS_MAX_ISR80H_COMMANDS)
+    {
+        // Invalid command
+        return 0;
+    }
+
+    ISR80H_COMMAND command_func = isr80h_commands[command];
+    if (!command_func)
+    {
+        return 0;
+    }
+
+    result = command_func(frame);
+    return result;
+}
+
+
+/*
+int command: this is the command specified in the EAX register of the user process before the process called interrupt 80.
+This command represents what the kernerl should do, for example 1 represents printing a message to the screen
+frame: the interrupt frame that points to the memory containing the user processses segment and general purpose registers.
+
+So the function perfroms following steps:
+1. it switches to the kernel page tables so that the memory is viewed from the kernels perspective.
+2. then it saves the registers from the the currently running task(current_task) und speichert sie mit der task_current_save_state in die struktur interrupt_frame
+was dem kernel zugriff darauf gibt.
+3. dann callt es die isr80h_handle_command funktion welche dafür verantwortlich ist den command im EAX register (int command) auszuführen.
+4. am ende wird das page directory mit task_page zurück zum page directory des tasks vom user process welcher den interrupt 0x80 invoked hat gewechselt*/
+void* isr80h_handler(int command, struct interrupt_frame* frame)
+{
+    void* res = 0;
+    kernel_page();
+    task_current_save_state(frame);
+    res = isr80h_handle_command(command, frame);
+    task_page();
+    return res;
+}
