@@ -45,7 +45,7 @@ _start:
 ; this label restores the processors segment registers to kernel land GDT selector offsets without invoking this label the
 ; processor would continue operating under user process selectors as defined in the GDT (privileges = security problem
 kernel_registers:
-    mov ax, 10
+    mov ax, 0x10
     mov ds, ax
     mov es, ax
     mov gs, ax
