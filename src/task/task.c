@@ -227,42 +227,58 @@ void task_current_save_state(struct interrupt_frame *frame)
 }
 
 
+// Definiert eine Funktion, die einen String aus dem Adressraum eines Tasks in den physischen Speicher (kernel adressraum, da der kernel adressraum 
+//l inear zum physischen speicher gemappt ist bis 0x40000(da beginnt userland)) kopiert.
+// task: Zeiger auf die Task-Struktur, von der kopiert wird.
+// virtual: Zeiger auf den Anfang der virtuellen Adresse im Task, von der kopiert wird.
+// phys: Zeiger auf den Anfang des physischen Speicherbereichs(kernel adressrauim), in den kopiert wird.
+// max: Maximale Anzahl der zu kopierenden Bytes.
 int copy_string_from_task(struct task* task, void* virtual, void* phys, int max)
 {
+    // Überprüft, ob die maximale Größe den Wert einer Seitengröße überschreitet.
     if (max >= PAGING_PAGE_SIZE)
     {
-        return -EINVARG;
+        return -EINVARG; // Gibt einen Fehler zurück, wenn 'max' zu groß ist.
     }
 
-    int res = 0;
+    int res = 0; // Variable für das Ergebnis.
+    // Reserviert Speicherplatz für einen temporären Buffer, der den zu kopierenden String enthält.
     char* tmp = kzalloc(max);
+    // Überprüft, ob die Speicherreservierung erfolgreich war.
     if (!tmp)
     {
-        res = -ENOMEM;
-        goto out;
+        res = -ENOMEM; // Setzt den Fehlercode, wenn die Speicherreservierung fehlschlägt.
+        goto out; // Springt zum Ende der Funktion.
     }
 
+    // Ruft das aktuelle Page directory des Tasks ab.
     uint32_t* task_directory = task->page_directory->directory_entry;
+    // Speichert den aktuellen Paging-Eintrag für die temporäre Adresse.
     uint32_t old_entry = paging_get(task_directory, tmp);
 
+    // Mappt die temporäre Adresse auf sich selbst im Task-Adressraum mit Schreib- und Leseberechtigung.
     paging_map(task->page_directory, tmp, tmp, PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    // Wechselt zum Seitenverzeichnis des Tasks.
     paging_switch(task->page_directory);
+    // Kopiert den String von der virtuellen Adresse in den temporären Puffer.
     strncpy(tmp, virtual, max);
+    // Wechselt zurück zum Kernel Page Directory.
     kernel_page();
 
+    // Stellt den ursprünglichen Page directory wieder her.
     res = paging_set(task_directory, tmp, old_entry);
-    if (res < 0)
+    if (res < 0) // Überprüft auf Fehler.
     {
-        res = -EIO;
-        goto out_free;
+        res = -EIO; // Setzt den Fehlercode bei einem Paging-Fehler.
+        goto out_free; // Springt zur Freigabe des Speichers.
     }
 
-    strncpy (phys, tmp, max);
+    // Kopiert den String aus dem temporären Puffer in den physischen Speicher.
+    strncpy(phys, tmp, max);
 
 out_free:
-    kfree(tmp);
+    kfree(tmp); // Gibt den reservierten Speicher frei.
 
 out:
-    return res;
-    
+    return res; // Gibt das Ergebnis zurück.
 }
