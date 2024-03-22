@@ -33,7 +33,7 @@
 #define SLOBOS_PROGRAM_VIRTUAL_ADDRESS 0x400000                 //defines the starting address where the user programs will be loaded in virtual memory (PAGING)
 #define SLOBOS_USER_PROGRAM_STACK_SIZE 1024 * 16                //defines size of the stack for user programs
 #define SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START 0x3FF000     //defines starting addres of the user programs virtual stack
-#define SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_END SLOBOS_PROGRAM_VIRTUAL_ADDRESS_START - SLOBOS_USER_PROGRAM_STACK_SIZE  //defines the end address of the user programs virtual stack
+#define SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_END SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START - SLOBOS_USER_PROGRAM_STACK_SIZE  //defines the end address of the user programs virtual stack
 
 //Processes
 #define SLOBOS_MAX_PROGRAM_ALLOCATIONS 1024                     //defines a max of memory allocations a user program can make

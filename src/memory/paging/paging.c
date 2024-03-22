@@ -222,10 +222,10 @@ int paging_map_range(struct paging_4gb_chunk* directory, void* virt, void* phys,
     for (int i = 0; i < count; i++)
     {
         res = paging_map(directory, virt, phys, flags);     //Maps as many single pages of virtual memory to single pages of physical memory as "counr" says 
-        if (res == 0)
+        if (res < 0)
         {
-            break;                                          //if the functio returns zero (couldnt map) it increments the virtual and phsical addresses by PAGING_PAGE_SIZE and moves on to the next page
-        }
+            break;              //If the value returned by paging map is below 0, it will break out of the loop.
+        }                                          
         virt += PAGING_PAGE_SIZE;
         phys += PAGING_PAGE_SIZE;
         

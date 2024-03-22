@@ -282,3 +282,28 @@ out_free:
 out:
     return res; // Gibt das Ergebnis zurück.
 }
+
+
+/*I need a way to be able to switch to any loaded tasks page tables so that the processor
+can see memory from a particular tasks prespective.
+This function switches all the segmekt selector registers to user space ones and the switches the current page directory
+to the tasks page directory thus forcing the processor to see memory as the provided task would*/
+int task_page_task(struct task* task)
+{
+    user_registers();
+    paging_switch(task->page_directory);
+    return 0;
+}
+
+/*This function will be used to aso an example pull the words 30 and 20 from the tasks stack into kernel space*/
+void* task_get_stack_item(struct task* task, int index)
+{
+    void* result = 0;
+    uint32_t* sp_ptr = (uint32_t*) task->registers.esp;
+    //Switch the processor to the given tasks page directory
+    task_page_task(task);
+    result = (void*) sp_ptr[index];     //the stack pointer from the tasks stack where as an example 20 and 30 is stored downwords (stack grows like that) at the "index" location in the stack
+    //Switch back to the kernel page
+    kernel_page();
+    return result;
+}
