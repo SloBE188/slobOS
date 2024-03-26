@@ -13,4 +13,4 @@ _start:
     jmp $
 
 section .data
-message: db 'I can talk with the kernel!', 0
+message: db 'Ola kernel from Userland :)', 0
