@@ -1,17 +1,2 @@
-Fixing bug
-nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
-i686-elf-gcc -I./src -I./src/idt -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc -std=gnu99 -c ./src/idt/idt.c -o ./build/idt/idt.o
-./src/idt/idt.c: In function 'isr80h_handler':
-./src/idt/idt.c:37:5: warning: implicit declaration of function 'task_current_save_state' [-Wimplicit-function-declaration]
-   37 |     task_current_save_state(frame);
-      |     ^~~~~~~~~~~~~~~~~~~~~~~
-./src/idt/idt.c:38:9: error: void value not ignored as it ought to be
-   38 |     res = isr80h_handle_command(command, frame);
-      |         ^
-./src/idt/idt.c:39:5: warning: implicit declaration of function 'task_page' [-Wimplicit-function-declaration]
-   39 |     task_page();
-      |     ^~~~~~~~~
-make: *** [Makefile:38: build/idt/idt.o] Error 1
-
-
-finishing implementing the interrupt 0x80 for userland operations with interrupts
+Implement PS2 keyboard Driver
+Implement PS2 Mouse
