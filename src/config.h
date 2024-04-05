@@ -14,7 +14,7 @@
 //100MB heap size
 #define SLOBOS_HEAP_SIZE_BYTES 104857600        //total size of the heap
 #define SLOBOS_HEAP_BLOCK_SIZE 4096             //the size of eacht block in the heap (4096 bytes)
-#define SLOBOS_HEAP_ADDRESS 0x01000000          //the starting address of the heap in memory
+#define SLOBOS_HEAP_ADDRESS 0x02000000          //the starting address of the heap in memory
 #define SLOBOS_HEAP_TABLE_ADDRESS 0x00007E00    //address where the heap table is in memory (heap table describes every entry(block) in the heap)
 
 //disk
