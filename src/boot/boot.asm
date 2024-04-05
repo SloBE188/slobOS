@@ -92,8 +92,8 @@ gdt_descriptor:
 [BITS 32]
 load32:
     mov eax, 1          ;Der Sektor im Speicher, wovon ich den kernel laden möchte (0 ist der Bootsektor)
-    mov ecx, 100        ;Totale Nummer von Sektoren, welche wir laden wollen.
-    mov edi, 0x0100000  ;Adresse, wohin wir die Sektoren laden wollen.
+    mov ecx, 100        ;Totale Nummer von Sektoren, welche ich laden will.
+    mov edi, 0x0100000  ;Adresse, wohin ich die Sektoren laden will.
     call ata_lba_read
     jmp CODE_SEG:0x0100000
 

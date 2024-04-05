@@ -48,5 +48,9 @@
 #define USER_CODE_SEGMENT 0x1b  //code segment for user land
 
 
+//keyboard
+#define SLOBOS_KEYBOARD_BUFFER_SIZE 1024
+
+
 
 #endif

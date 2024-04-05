@@ -31,6 +31,15 @@ struct process
     //The size (in bytes) of the data pointed to by "ptr"
     uint32_t size;
 
+    //keyboard buffer. Every Process has its own Keyboard buffer where it stores when a key gets pressed
+    struct keyboard_buffer
+    {
+        char buffer[SLOBOS_KEYBOARD_BUFFER_SIZE];   //buffer
+        int tail;                                   //used for push operations(when a key is pressed a character will be pushed to the end of the buffer dargestellt durch den berechneten index in der tail variable(keyboard_get_tail_index))
+        int head;                                   //used for popping from the front of the buffer which would be done when i wanna read what was pushed to the buffer
+    }keyboard;
+    
+
 };
 
 
@@ -42,6 +51,9 @@ int process_load_for_slot(const char *filename, struct process **process, int pr
 
 
 int process_load(const char* filename, struct process** process);
+
+struct process *process_current();
+struct process *process_get(int process_id);
 
 
 

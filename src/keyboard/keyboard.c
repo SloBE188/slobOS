@@ -1,0 +1,81 @@
+#include "keyboard.h"
+#include "status.h"
+#include "kernel.h"
+#include "task/process.h"
+#include "task/task.h"
+
+
+ //head & tail for the linked list (favourite data structure). linked list is responsible for holding the keyboard drivers
+static struct keyboard *keyboard_list_head = 0;
+static struct keyboard *keyboard_list_tail = 0;
+
+void keyboard_init()
+{
+
+}
+
+
+/*With this function i can insert keyboard drivers into my linked list.
+if its the first keyboard driver in tke linked list it sets the head and the tail to the provided keyboard driver.
+If not it expands the linked list with "->next" and sets the tail to the curr keyboard driver.
+After that it initializes the function.*/
+int keyboard_insert(struct keyboard *keyboard)
+{
+
+    int res = 0;
+    if (keyboard->init == 0)
+    {
+        res = -EINVARG
+        goto out;
+    }
+    if (keyboard_list_tail)
+    {
+        keyboard_list_tail->next = keyboard;
+        keyboard_list_tail = keyboard;
+    }else
+    {
+        keyboard_list_head = keyboard;
+        keyboard_list_tail = keyboard;
+    }
+
+    res = keyboard->init();
+     
+out:
+    return res;    
+}
+
+
+/*gibt mir den index im buffer von einem process zurück, wenn ich auf den tail zugreifen will. Der index ist ein bestimmter speicherpunkt im buffer*/
+static int keyboard_get_tail_index(struct process *process)
+{
+    return process->keyboard.tail % sizeof(process->keyboard.buffer);
+}
+
+
+//Setzt den Tail eins runter(-1), berechnet den index des tails und löscht diesen (character wird gelöscht)
+void keyboard_backspace()
+{
+    process->keyboard.tail -= 1;
+    int real_index = keyboard_get_tail_index(struct process *process);
+    process->keyboard.buffer[real_index] = 0x00;
+}
+
+
+
+
+
+/*Setzt den character im paramenter char c(kann irgend eine taste sein auf dem keyboard) an das ende der linked list(tail) und 
+increments the tail afterwards so the byte does not get overwritten when this function gets used the next timeand sets the tail to its right spot. */
+void keyboard_push(char c)
+{
+    struct process *process = process_current;
+    if (!process)
+    {
+        return;
+    }
+
+    int real_index = keyboard_get_tail_index(process);
+    process->keyboard.buffer[real_index] = c;
+    process->keyboard.tail++;
+    
+}
