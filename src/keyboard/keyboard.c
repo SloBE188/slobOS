@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "task/process.h"
 #include "task/task.h"
+#include "ps2.h"
 
 
  //head & tail for the linked list (favourite data structure). linked list is responsible for holding the keyboard drivers
@@ -11,6 +12,8 @@ static struct keyboard *keyboard_list_tail = 0;
 
 void keyboard_init()
 {
+
+    keyboard_insert(ps2_init());
 
 }
 
@@ -64,7 +67,7 @@ void keyboard_backspace(struct process *process)
 
 
 
-/*Setzt den character im paramenter char c(kann irgend eine taste sein auf dem keyboard) an das ende der linked list(tail) und 
+/*Setzt den character im paramenter char c(kann irgend eine taste sein auf dem keyboard) an das ende des arrays (tail) also den buffer und 
 increments the tail afterwards so the byte does not get overwritten when this function gets used the next timeand sets the tail to its right spot. */
 void keyboard_push(char c)
 {
