@@ -25,7 +25,7 @@ int keyboard_insert(struct keyboard *keyboard)
     int res = 0;
     if (keyboard->init == 0)
     {
-        res = -EINVARG
+        res = -EINVARG;
         goto out;
     }
     if (keyboard_list_tail)
@@ -53,10 +53,10 @@ static int keyboard_get_tail_index(struct process *process)
 
 
 //Setzt den Tail eins runter(-1), berechnet den index des tails und löscht diesen (character wird gelöscht)
-void keyboard_backspace()
+void keyboard_backspace(struct process *process)
 {
     process->keyboard.tail -= 1;
-    int real_index = keyboard_get_tail_index(struct process *process);
+    int real_index = keyboard_get_tail_index(process);
     process->keyboard.buffer[real_index] = 0x00;
 }
 
@@ -77,5 +77,32 @@ void keyboard_push(char c)
     int real_index = keyboard_get_tail_index(process);
     process->keyboard.buffer[real_index] = c;
     process->keyboard.tail++;
+    
+}
+
+
+/*Diese Funktion popt(löscht) einen key von vorne vom keyboard buffer(head) vom aktuellen process.*/
+char keyboard_pop()
+{
+
+    if (!process_current)   //cloud be false
+    {
+        return 0;
+    }
+
+    struct process *process = process_current;  //could be false
+    //compute the real index in the buffer
+    int real_index = process->keyboard.head % sizeof(process->keyboard.buffer);
+    char c = process->keyboard.buffer[real_index];
+    if (c == 0x00)
+    {
+        //Nothing to pop becuase in this location at the buffer is nothing stored hihi
+        return 0;
+    }
+
+    //replace the index in the buffer array with ZEROOO
+    process->keyboard.buffer[real_index] = 0;
+    process->keyboard.head++;
+    return c;
     
 }
