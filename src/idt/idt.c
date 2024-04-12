@@ -7,6 +7,10 @@
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
 
+
+//This array containts every interrupt number (represented as a index) whose value represents a pointer to the asm macro function. Array is declared in the idt.asm file.
+extern void* interrupt_pointer_table[SLOBOS_TOTAL_INTERRUPTS];
+
 //Command Array for int0x80
 static ISR80H_COMMAND isr80h_commands[SLOBOS_MAX_ISR80H_COMMANDS];
 
@@ -20,14 +24,6 @@ extern void isr80h_wrapper();
 
 
 
-//This handler wil print "Keyboard pressed" whenever a krey gets pressed
-void int21h_handler()
-{
-
-    print("Keyboard pressed\n");
-    /*Send this to the PIC to acknowledge i have handled the interrupt*/
-    outb(0x20,0x20); // communicating with the pic is achieved through I/O Ports (command port=0x20, data port=0x21)
-}
 /*This no interrupt handler will be used when their is no
 associated interrupt routine for an interrupt number*/
 void no_interrupt_handler()
@@ -42,7 +38,7 @@ void idt_zero()
     print("Divide by zero error\n");
 }
 
-//funktion wird gebraucht, um die idt table mit den interrupts zu füllen. man muss der funktion die interrupts nummer und die adresse der zuständigen ISR mitliefern.
+//funktion wird gebraucht, um die idt table mit den interrupts zu füllen. man muss der funktion die interrupt nummer und die adresse der zuständigen ISR mitliefern.
 /* in der IDT sind direkt die Adressen der ISR (Interrupt Service Routines) gespeichert. Wenn ein Interrupt auftritt, verwendet der Prozessor die IDT,
  um zu bestimmen, welche ISR aufgerufen werden soll. Diese ISR, die in Assembly geschrieben sind, fungieren als erste Anlaufstelle,
  um den aktuellen Prozessorzustand zu sichern und die Umgebung für einen sicheren Aufruf des eigentlichen Interrupt-Handlers (in C in disem file geschrieben) vorzubereiten.*/
@@ -67,11 +63,10 @@ void idt_init()
     idtr_descriptor.base = (uint32_t) idt_descriptors;
 
 
-    //This loop sets all interrupts to point to the no interrupt routine so every interrupt (i have 512) has a ISR assigned to it. When i add a interrupt i have to add them manually
-    //like with the int21h (idt_set(0x21, int21h);)
+    //This loop sets all interrupts to point to a index in the interrupt_pointer_table array so every interrupt (i have 512) has a ISR assigned to it autimatically with my macro written in asm so i dont have to write a new ISR for every new interrupt.
     for (int i = 0; i < SLOBOS_TOTAL_INTERRUPTS; i++)
     {
-        idt_set(i, no_interrupt);
+        idt_set(i, interrupt_pointer_table[i]);
     }
     
 
@@ -82,7 +77,7 @@ void idt_init()
     handler which is defined in asm. The int21h handler eventually
     calls the int21h_handler C function defined above here.
     int21h is in the src/idt/idt.asm file*/
-    idt_set(0x21, int21h);
+    //idt_set(0x21, int21h);
 
 
 
@@ -158,4 +153,11 @@ void* isr80h_handler(int command, struct interrupt_frame* frame)
     res = isr80h_handle_command(command, frame);
     task_page();
     return res;
+}
+
+
+void interrupt_handler(int interrupt, struct interrupt_frame *frame)
+{
+
+    outb(0x20, 0x20);
 }

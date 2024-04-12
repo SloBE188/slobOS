@@ -4,6 +4,7 @@ section .asm
 extern int21h_handler
 extern no_interrupt_handler
 extern isr80h_handler
+extern interrupt_handler
 
 ;macht die labels von aussen erreichbar (C)
 global int21h
@@ -12,6 +13,7 @@ global no_interrupt
 global enable_interrupts
 global disable_interrupts
 global isr80h_wrapper
+global interrupt_pointer_table
 
 ;enables interrupts
 enable_interrupts:
@@ -62,6 +64,32 @@ no_interrupt:
 
 
 
+%macro interrupt 1
+    global int%1          ; Macht die Funktion int%1 global verfügbar
+    int%1:                ; Definiert den Einstiegspunkt für den Interrupt
+        ; INTERRUPT FRAME START
+        pushad            ; Sichert alle allgemeinen Register (eax, ebx, ecx, edx, esi, edi, ebp, esp)
+        push esp          ; Sichert den Stack-Pointer auf dem Stack
+        push dword %1     ; Legt die Interrupt-Nummer auf den Stack
+        call interrupt_handler ; Ruft die zentrale Interrupt-Handling-Funktion auf (interrupt_handler is a function in C(idt.c))
+        add esp, 8        ; Bereinigt den Stack um die beiden zuvor gepushten Werte (esp, Interrupt-Nummer)
+        popad             ; Stellt die zuvor gesicherten Register wieder her
+        iret              ; Beendet die ISR und stellt den vorherigen Prozesszustand wieder her
+%endmacro
+
+
+
+;this simply loops 512 times and calls the macro functions which ends up creating the int1, int2, int3 etc. asm interrupt handlers
+assign i 0
+%rep 512
+    interrupt i
+%assign i i+1
+%endrep
+    
+
+
+
+
 ;this asm label is the entry point for the interrupt ox80 and is responsible for transferring control to our C code where the request (int command)
 ;will be processed and once complete this asm label will return to the calling user process.
 isr80h_wrapper:
@@ -105,3 +133,15 @@ isr80h_wrapper:
     section .data
     ;inside here is stored the return result from isr80h_handler
     tmp_res: dd 0
+
+
+%macro interrupt_array_entry 1
+    dd int%1             ; Definiert einen Eintrag in der Tabelle, der die Adresse der Routine int%1 enthält
+%endmacro
+
+interrupt_pointer_table:
+%assign i 0
+%rep 512
+    interrupt_array_entry i ; Füllt die Tabelle(array in C) mit den Adressen der Interrupt-Handler
+%assign i i+1
+%endrep
