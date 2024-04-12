@@ -163,6 +163,8 @@ void* isr80h_handler(int command, struct interrupt_frame* frame)
 }
 
 
+/*With this function any interrupt that i recieve from the new ISR will be forwarded
+to the corresponding C interrupt handlers that is registered within the "interrupt_callbacks" array.*/
 void interrupt_handler(int interrupt, struct interrupt_frame *frame)
 {
     kernel_page();
@@ -174,4 +176,19 @@ void interrupt_handler(int interrupt, struct interrupt_frame *frame)
     
     task_page();
     outb(0x20, 0x20);
+}
+
+
+/*I created the function pointer array "interrupt_callbacks" and the "interrupt_handler" function. So i need
+only a function with which i can register new C interrupt handlers in my "interrupt_callbacks" array.
+This is what this function does JKASDFBhjklasdilogufujiolasgdfjkh jajaaaaa*/
+int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback)
+{
+    if (interrupt < 0 || interrupt >= SLOBOS_TOTAL_INTERRUPTS)
+    {
+        return -EINVARG;
+    }
+    
+    interrupt_callbacks[interrupt] = interrupt_callback;
+    return 0;
 }

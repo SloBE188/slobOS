@@ -118,6 +118,13 @@ struct gdt_structured gdt_structured[SLOBOS_TOTAL_GDT_SEGMENTS] = {
     {.base = 0x00, .limit = 0xffffffff, .type = 0xf2},             // User data segment
     {.base = (uint32_t)&tss, .limit=sizeof(tss), .type = 0xE9}      // TSS Segment
 };
+
+void pic_timer_interrupt(struct interrupt_frame *frame)
+{
+    print("Timer interrupt works\n");
+}
+
+
 void kernel_main()
 {
     terminal_initialize();
@@ -177,6 +184,10 @@ void kernel_main()
 
     //Initialize the keyboard drivers with the virtual keyboard layer
     keyboard_init();
+
+
+    //TIMER INTERRUPT WITH NEW IDT SYSTEM
+    idt_register_interrupt_callback(0x20, pic_timer_interrupt);
 
     
 
