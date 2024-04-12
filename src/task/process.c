@@ -256,3 +256,23 @@ out:
     return res;
     
 }
+
+
+//this function changes the currently loaded process to the new process argument provided(Therefore swithcing the active process)
+int process_switch(struct process *process)
+{
+    current_process = process;
+    return 0;
+}
+
+//this function loads a process normal with the "process_load" function and then switches the process to the new loaded process
+int process_load_switch(const char *filename, struct process **process)
+{
+    int res = process_load(filename, process);
+    if (res == 0)
+    {
+        process_switch(*process);
+    }
+
+    return res;
+}

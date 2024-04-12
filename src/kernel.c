@@ -240,7 +240,7 @@ void kernel_main()
 
 
     struct process* process = 0;
-    int res = process_load("0:/blank.bin", &process);
+    int res = process_load_switch("0:/blank.bin", &process);
     if (res != SLOBOS_ALL_OK)
     {
         panic("Failed to load blank.bin\n");
