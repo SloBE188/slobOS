@@ -3,6 +3,7 @@
 #include "memory/memory.h"
 #include "io/io.h"
 #include "task/task.h"
+#include "status.h"
 
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
@@ -10,6 +11,12 @@ struct idtr_desc idtr_descriptor;
 
 //This array containts every interrupt number (represented as a index) whose value represents a pointer to the asm macro function. Array is declared in the idt.asm file.
 extern void* interrupt_pointer_table[SLOBOS_TOTAL_INTERRUPTS];
+
+/*Here the function pointers to the C interrupt handlers get stored.
+Der Index des Arrays steht für die Nummber des Interrupts, während der darin gespeicherte Pointer
+auf den Handler des Interrupts zeigt. Index 1 im Array wäre ein Funktionszeiger auf die Funktion,
+welche für Interrupt 1 verantwortlich ist.*/
+static INTERRUPT_CALLBACK_FUNCTION interrupt_callbacks[SLOBOS_TOTAL_INTERRUPTS];
 
 //Command Array for int0x80
 static ISR80H_COMMAND isr80h_commands[SLOBOS_MAX_ISR80H_COMMANDS];
@@ -158,6 +165,13 @@ void* isr80h_handler(int command, struct interrupt_frame* frame)
 
 void interrupt_handler(int interrupt, struct interrupt_frame *frame)
 {
-
+    kernel_page();
+    if (interrupt_callbacks[interrupt] != 0)
+    {
+        task_current_save_state(frame);
+        interrupt_callbacks[interrupt](frame);
+    }
+    
+    task_page();
     outb(0x20, 0x20);
 }

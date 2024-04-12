@@ -7,14 +7,12 @@ extern isr80h_handler
 extern interrupt_handler
 
 ;macht die labels von aussen erreichbar (C)
-global int21h
 global idt_load
 global no_interrupt
 global enable_interrupts
 global disable_interrupts
 global isr80h_wrapper
 global interrupt_pointer_table
-
 ;enables interrupts
 enable_interrupts:
     sti
@@ -48,11 +46,11 @@ idt_load:
 ;ruft die effektive behandlungsroutine (handler) auf (ist IMMER in C geschrieben(int21h_handler)) welcher dann die aktionen effektiv ausführt, wovür dieser interrupt ist,
 ;stellt dann den Prozessorzustand wieder her, aktiviert die interrupts wieder
 ;und kehrt dann aus der interrupt-behandlung zurück (iret)
-int21h:
-    pushad  ;sichert den aktuellen Prozessorzustand
-    call int21h_handler ;ruft interrupt handler (in c geschrieben in idt.c) auf
-    popad   ;stellt den alten Prozessorzustand wieder her
-    iret    ;kehrt aus der interrupt behandlung zurück
+;int21h:
+;    pushad  ;sichert den aktuellen Prozessorzustand
+;    call int21h_handler ;ruft interrupt handler (in c geschrieben in idt.c) auf
+;    popad   ;stellt den alten Prozessorzustand wieder her
+;    iret    ;kehrt aus der interrupt behandlung zurück
 
 ;Ist eine ISR für den interrupt "no_interrupt"
 no_interrupt:
@@ -80,7 +78,7 @@ no_interrupt:
 
 
 ;this simply loops 512 times and calls the macro functions which ends up creating the int1, int2, int3 etc. asm interrupt handlers
-assign i 0
+%assign i 0
 %rep 512
     interrupt i
 %assign i i+1

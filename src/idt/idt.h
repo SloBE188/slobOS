@@ -13,6 +13,9 @@ struct interrupt_frame;
 typedef void*(*ISR80H_COMMAND)(struct interrupt_frame* frame);
 
 
+//function pointer for the interrupt functions
+typedef void(*INTERRUPT_CALLBACK_FUNCTION)(struct interrupt_frame *frame);
+
 
 //representing a single interrupt in our interrupt descriptor table, jeder eintrag (entry) in der idt ist jeweils 8 bytes lang
 struct idt_desc
@@ -59,6 +62,9 @@ void isr80h_register_command(int command_id, ISR80H_COMMAND command);
 void idt_init();
 void enable_interrupts();
 void disable_interrupts();
+
+
+int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback);
 
 
 #endif
