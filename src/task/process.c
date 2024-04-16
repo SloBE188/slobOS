@@ -259,6 +259,7 @@ out:
 
 
 //this function changes the currently loaded process to the new process argument provided(Therefore swithcing the active process)
+//so it just switches the current_process variable to the new process which is provided as a parameter
 int process_switch(struct process *process)
 {
     current_process = process;
