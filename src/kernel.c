@@ -187,7 +187,7 @@ void kernel_main()
 
 
     //TIMER INTERRUPT WITH NEW IDT SYSTEM
-    idt_register_interrupt_callback(0x20, pic_timer_interrupt);
+    //idt_register_interrupt_callback(0x20, pic_timer_interrupt);
 
     
 

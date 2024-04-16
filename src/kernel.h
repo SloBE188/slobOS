@@ -14,6 +14,7 @@
 #define ERROR_I(value) (int)(value)
 #define ISERR(value) ((int)value < 0)
 
+void terminal_writechar(char c, char colour);
 
 void kernel_main();
 void print(const char* str);
