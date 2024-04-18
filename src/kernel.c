@@ -37,6 +37,27 @@ void terminal_putchar(int x, int y, char c, char colour)
     video_mem[(y * VGA_WIDTH)+ x] = terminal_make_char(c, colour);
 }
 
+
+//backspace
+void terminal_backspace()
+{
+    if (terminal_row == 0 && terminal_col ==0 )
+    {
+        return;
+    }
+    
+    if (terminal_col == 0)
+    {
+        terminal_row -= 1;
+        terminal_col = VGA_WIDTH;
+    }
+    
+    terminal_col -= 1;
+    terminal_writechar(" ", 15);
+    terminal_col -= 1;
+    
+}
+
 //unterschied von putchar function zu writechar function: writechar keeps track of the coloums and rows
 void terminal_writechar(char c, char colour)
 {
@@ -46,6 +67,14 @@ void terminal_writechar(char c, char colour)
         terminal_col = 0;
         return;
     }
+
+    if (c == 0x08)
+    {
+        terminal_backspace();
+        return;
+    }
+    
+
     terminal_putchar(terminal_col, terminal_row, c, colour);
     terminal_col += 1;
     if(terminal_col >= VGA_WIDTH)
