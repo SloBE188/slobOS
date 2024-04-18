@@ -58,7 +58,7 @@ static int keyboard_get_tail_index(struct process *process)
 //Setzt den Tail eins runter(-1), berechnet den index des tails und löscht diesen (character wird gelöscht)
 void keyboard_backspace(struct process *process)
 {
-    process->keyboard.tail -= 1;
+    process->keyboard.tail -=1;
     int real_index = keyboard_get_tail_index(process);
     process->keyboard.buffer[real_index] = 0x00;
 }
@@ -71,7 +71,7 @@ void keyboard_backspace(struct process *process)
 increments the tail afterwards so the byte does not get overwritten when this function gets used the next timeand sets the tail to its right spot. */
 void keyboard_push(char c)
 {
-    struct process *process = process_current;
+    struct process *process = process_current();
     if (!process)
     {
         return;
@@ -94,12 +94,12 @@ void keyboard_push(char c)
 char keyboard_pop()
 {
 
-    if (!process_current)   //cloud be false
+    if (!task_current)   //cloud be false
     {
         return 0;
     }
 
-    struct process *process = process_current;  //could be false
+    struct process* process = task_current()->process; 
     //compute the real index in the buffer
     int real_index = process->keyboard.head % sizeof(process->keyboard.buffer);
     char c = process->keyboard.buffer[real_index];
