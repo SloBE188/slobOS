@@ -50,6 +50,22 @@ step2:
     sti ;Enable Interrupts
 
 
+    ; VBE Modus setzen
+    mov ax, 0x4F02
+    mov bx, 0x17D
+    int 0x10
+    cmp ax, 0x004F
+    jne error
+
+    ; VBE Modusinformationen abrufen
+    mov ax, 0x4F01
+    mov cx, 0x17D
+    lea di, mode_info
+    int 0x10
+    cmp ax, 0x004F
+    jne error
+
+
 .load_protected:
     cli 
     lgdt[gdt_descriptor]    ;loads GDT
@@ -159,7 +175,13 @@ ata_lba_read:
     ;End of reading sectors into memory
     ret
 
+    error:
+        ; Fehlerbehandlung: Halte das System an
+        hlt
 
+    ; Struktur für Modusinformationen
+    mode_info:
+        resb 256   ; Reserviere 256 Bytes für Modusinformationen
 
 times 510- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
 dw 0xAA55       ;boot signature
