@@ -119,7 +119,7 @@ struct elf32_dyn {
     } d_un;
 } __attribute__((packed));
 
-// ELF symbol table entry
+// ELF symbol table entry. A Symbol can be a function, variable etc.
 struct elf32_sym {
     elf32_word st_name;     // Symbol name (index into string table)
     elf32_addr st_value;    // Symbol value
@@ -128,5 +128,10 @@ struct elf32_sym {
     unsigned char st_other; // Reserved (visibility)
     elf32_half st_shndx;    // Section index
 } __attribute__((packed));
+
+
+void* elf_get_entry_ptr(struct elf_header *elf_header);
+uint32_t elf_get_entry_(struct elf_header *elf_header);
+
 
 #endif
