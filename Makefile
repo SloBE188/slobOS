@@ -103,6 +103,9 @@ all: ./bin/boot.bin ./bin/kernel.bin user_programs
 ./build/keyboard/ps2.o: ./src/keyboard/ps2.c
 	i686-elf-gcc $(INCLUDES) -I./src/keyboard $(FLAGS) -std=gnu99 -c ./src/keyboard/ps2.c -o ./build/keyboard/ps2.o
 
+./build/vbe/vbe.o: ./src/vbe/vbe.c
+	i686-elf-gcc $(INCLUDES) -I./src/vbe $(FLAGS) -std=gnu99 -c ./src/vbe/vbe.c -o ./build/vbe/vbe.o
+
 
 user_programs:
 	cd ./programs/blank && $(MAKE) all

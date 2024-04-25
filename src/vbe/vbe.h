@@ -1,8 +1,9 @@
 #ifndef VBE_H
 #define VBE_H
 
-#include <stdbool.h>
+#include <stdint.h>
 
+extern vbe_mode_info_structure* mode_info;
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -41,7 +42,5 @@ struct vbe_mode_info_structure {
 	uint16_t off_screen_mem_size;	// size of memory in the framebuffer but not being displayed on the screen
 	uint8_t reserved1[206];
 } __attribute__ ((packed));
-
-extern vbe_mode_info_structure mode_info;
 
 #endif
