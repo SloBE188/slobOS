@@ -7,6 +7,7 @@
 #include "idt/idt.h"
 #include "string/string.h"
 #include "memory/paging/paging.h"
+#include "loader/formats/elfloader.h"
 
 // Globale Variable, die auf den aktuell laufenden Task zeigt.
 struct task* current_task = 0;
@@ -134,8 +135,12 @@ int task_init(struct task* task, struct process* process)
         return -EIO;
     }
 
-    // Initialisiere Register (IP, SS, CS und ESP) für den Task.
+    // Initialisiere Register (IP, SS, CS und ESP) für den Task.    
     task->registers.ip = SLOBOS_PROGRAM_VIRTUAL_ADDRESS;
+    if (process->filetype == PROCESS_FILETYPE_ELF)
+    {
+        task->registers.ip = elf_header(process->elf_file)->e_entry;    //set the IP to the start of the elf file which is in the elf header (e_entry)
+    }
     task->registers.ss = USER_DATA_SEGMENT;
     task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = SLOBOS_PROGRAM_VIRTUAL_STACK_ADDRESS_START;

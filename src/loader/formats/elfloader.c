@@ -90,6 +90,13 @@ struct elf32_shdr* elf_section(struct elf_header* header, int index)
     return &elf_sheader(header)[index];
 }
 
+//gives physical program header address
+void* elf_phdr_phys_addr(struct elf_file *file, struct elf32_phdr *phdr)
+{
+    return elf_memory(file)+phdr->p_offset;
+}
+
+
 //returns the section header string (again header + offset of the section header beacuse the first thing in a elf file ist the elf header) based on the index "e_shstrndx"
 char *elf_str_table(struct elf_header *header)
 {
