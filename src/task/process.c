@@ -148,21 +148,45 @@ int process_map_elf(struct process *process)
     struct elf_file *elf_file = process->elf_file;
     struct elf_header *header = elf_header(elf_file);
     struct elf32_phdr *phdrs = elf_pheader(header);
-    for (int i = 0; i < header->e_phnum; i++)       //loops threw all the program headers of the file
+    //loops threw all the program headers
+    for (int i = 0; i < header->e_phnum; i++)
     {
+        // Greife auf den i-ten programmheader zu und speichere die Adresse.
         struct elf32_phdr *phdr = &phdrs[i];
+
+        // Bestimme die physikalische Adresse des Segmentanfangs
         void *phdr_phys_address = elf_phdr_phys_addr(elf_file, phdr);
-        int flags = PAGING_IS_PRESENT |PAGING_ACCESS_FROM_ALL;
+
+        // Setze die Standard-Flags für Paging, die angibt, dass die Page 
+        // anwesend ist und von allen Zugriffsebenen aus zugegriffen werden kann.
+        int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
+
+        // Überprüfe, ob das Segment schreibgeschützt ist (PF_W Flag).
+        // Wenn ja, füge das Schreibrecht zur Flag hinzu.
         if (phdr->p_flags & PF_W)
         {
-            flags|= PAGING_IS_WRITEABLE;
+            flags |= PAGING_IS_WRITEABLE;       //hinzufügen vom flag PAGING_IS_WRITEABLE
         }
-        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_filesz), flags);
-    if (ISERR(res))
-    {
-        break;
-    }
-    
+
+        // Führe die Paging zuodnung durch:
+        // - Verwende das page directory des Prozesses.
+        // - Die virtuelle Adresse (phdr->p_vaddr) wird zur nächstniedrigeren pagegrenze ausgerichtet.
+        // - Die physikalische Startadresse wird ebenfalls zur pagegrenze ausgerichtet.
+        // - Die physikalische Endadresse des Segmentes wird auf die nächsthöhere pagegrenze ausgerichtet.
+        // - Wende die zuvor definierten Flags an.
+        res = paging_map_to(
+            process->task->page_directory,
+            paging_align_to_lower_page((void*)phdr->p_vaddr),
+            paging_align_to_lower_page(phdr_phys_address),
+            paging_align_address(phdr_phys_address + phdr->p_filesz),
+            flags);
+
+        // Überprüfe das Ergebnis der Seitenzuordnung.
+        // Falls ein Fehler auftritt (ISERR(res) liefert true), brich die Schleife ab.
+        if (ISERR(res))
+        {
+            break;
+        }
     }
         
     return res;
