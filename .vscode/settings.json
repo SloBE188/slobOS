@@ -3,7 +3,10 @@
   "files.associations": {
     "idt.h": "c",
     "kheap.h": "c",
-    "kernel.h": "c"
+    "kernel.h": "c",
+    "charconv": "c",
+    "paging.h": "c",
+    "config.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

@@ -81,6 +81,14 @@ void* paging_align_address(void* ptr)
     
 }
 
+//This function alignes the value to the lowest page for the value provided
+void* paging_align_to_lower_page(void* addr)
+{
+    uint32_t _addr = (uint32_t) addr;
+    _addr -= (_addr % PAGING_PAGE_SIZE);
+    return (void*) _addr;
+}
+
 // Die Funktion paging_map_to ordnet eine physische Adressbereich einer virtuellen Adresse im Paging-Verzeichnis zu.
 // Sie nimmt ein Verzeichnis (Page Directory), einen virtuellen Startpunkt, einen physischen Startpunkt,
 // ein physisches Endpunkt und Flaggen für die Seiteneigenschaften.

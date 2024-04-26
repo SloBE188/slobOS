@@ -1,7 +1,5 @@
 #include "elfloader.h"
-#include "elf.h"
 #include "fs/file.h"
-#include "stab.h"
 #include <stdbool.h>
 #include "memory/memory.h"
 #include "memory/heap/kheap.h"
@@ -13,7 +11,7 @@
 
 
 //ELf signature Array
-const char *elf_signature[] = {0x7f, 'E', 'L', 'F'};
+const char elf_signature[] = {0x7f, 'E', 'L', 'F'};
 
 
 //Checks if the elf signature is right with the memcmp (compares the param with the elf_signature array)
@@ -37,13 +35,13 @@ static bool elf_valid_encoding(struct elf_header *header)
 //The elf loader curr only support executable files so it checks if the file is a executable and gets loaded above the SLOBOS_PROGRAM_VIRTUAL_ADDRESS(0x400000)
 static bool elf_is_executable(struct elf_header *header)
 {
-    return header->e_Type == ET_EXEC && header->e_entry >= SLOBOS_PROGRAM_VIRTUAL_ADDRESS;
+    return header->e_type == ET_EXEC && header->e_entry >= SLOBOS_PROGRAM_VIRTUAL_ADDRESS;
 }
 
 //checks if the elf file has a program header(it needs it lol)
-static bool elf_has_program_header(struct elf_header *header)
+static bool elf_has_program_header(struct elf_header* header)
 {
-    return header->ephoff != 0;
+    return header->e_phoff != 0;
 }
 
 //gives me the physical address where the elf file is loaded back
@@ -69,9 +67,9 @@ struct elf32_shdr *elf_sheader(struct elf_header *header)
 struct elf32_phdr *elf_pheader(struct elf_header *header)
 {
     //if there is no program header
-    if (header->e_phoff = 0)
+    if (header->e_phoff == 0)
     {
-        return = 0;
+        return 0;
     }
     
     //if there is one, return it
@@ -87,7 +85,7 @@ struct elf32_phdr *elf_program_header(struct elf_header *header, int index)
 
 
 //this will return a particular section header entry based on the index provided with the "elf_sheader" function
-struct elf32_shdr *elf_sheader(struct elf_header *header, int index)
+struct elf32_shdr* elf_section(struct elf_header* header, int index)
 {
     return &elf_sheader(header)[index];
 }
@@ -112,13 +110,13 @@ void* elf_virtual_end(struct elf_file *file)
 }
 
 //returns the start of the elf file (first loadable section in the binary) (physical address)
-void* elf_physical_base(struct elf_file *file)
+void* elf_phys_base(struct elf_file *file)
 {
     return file->physical_base_address;
 }
 
 //returns the end of the elf file (last loadable section in the binary) (physical address)
-void* elf_physical_end(struct elf_file *file)
+void* elf_phys_end(struct elf_file *file)
 {
     return file->physical_end_address;
 }
@@ -127,7 +125,7 @@ void* elf_physical_end(struct elf_file *file)
 //puts helper functions together and checks if the elf file is valid and can be loaded!
 int elf_validate_loaded(struct elf_header *header)
 {
-    return (elf_valid_signature(header) && elf_valid_class(header) && elf_valid_encoding(header) && elf_has_program_header(header)) ? SLOBOS_ALL_OK : -EINVARG;
+    return (elf_valid_signature(header) && elf_valid_class(header) && elf_valid_encoding(header) && elf_has_program_header(header)) ? SLOBOS_ALL_OK : -EINFORMAT;
 }
 
 
@@ -158,12 +156,13 @@ int elf_process_phdr_pt_load(struct elf_file *elf_file, struct elf32_phdr *phdr)
 int elf_process_pheader(struct elf_file *elf_file, struct elf32_phdr *phdr)
 {
     int res = 0;
-    switch (phdr->e_type)
+    switch (phdr->p_type)
     {
     case PT_LOAD:
         res = elf_process_phdr_pt_load(elf_file, phdr);
     break;
     }
+    return res;
 }
 
 
@@ -228,7 +227,7 @@ int elf_load(const char *filename, struct elf_file **file_out)
     fd = res;       //fd is the filepointer now
     struct file_stat stat;
     res = fstat(fd, &stat);     //gets the size of the elf file
-    if (res <= 0)
+    if (res < 0)
     {
         goto out;
     }

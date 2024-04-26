@@ -5,6 +5,11 @@
 #include "task.h"
 #include "config.h"
 
+#define PROCESS_FILETYPE_ELF 0
+#define PROCESS_FILETYPE_BINARY 1
+
+typedef unsigned char PROCESS_FILETYPE;
+
 
 //ein process besteht aus einem oder mehreren tasks. ein process ist ein running program auf dem system.
 struct process
@@ -22,8 +27,16 @@ struct process
     //The memory allocations made by this process
     void *allocations[SLOBOS_MAX_PROGRAM_ALLOCATIONS];  //This is a array holding the memory allocations belonging to this process.
 
-    //The physical pointer to the beginning of the process in memory
-    void *ptr;
+
+    //The file can either be binary or elf (as defined above PROCESS_FILETYPE_ELF, PROCESS_FILETYPE_BINARY)
+    PROCESS_FILETYPE filetype;
+    union
+    {
+        //The physical pointer to the beginning of the process in memory
+        void *ptr;
+        struct elf_file *elf_file;
+    };
+    
 
     //The physical pointer to the stack memory
     void *stack;

@@ -8,6 +8,7 @@
 #include "string/string.h"
 #include "fs/file.h"
 #include "kernel.h"
+#include "loader/formats/elfloader.h"
 
 // Pointer zum aktuell laufenden Prozess
 struct process *current_process = 0;
@@ -79,7 +80,8 @@ static int process_load_binary(const char* filename, struct process *process)
     }
     
     // hier wird der gemacht, dass die variable "ptr"(physical pointer to the beginning of the process in memory) auf 
-    // den startpunkt der zuvor geladenen data vom process zeigt. 
+    // den startpunkt der zuvor geladenen data vom process zeigt.
+    process->filetype = PROCESS_FILETYPE_BINARY;        //sets the filetype to binary 
     process->ptr = program_data_ptr;
     process->size = stat.filesize;
 
@@ -89,11 +91,35 @@ out:
     return res;
 }
 
-// Wrapper function for process_load_binary
+//Lädt ein elf file in den memory (ist wie die process laod binary function einfach für elf files)
+int process_load_elf(const char *filename, struct process *process)
+{
+    int res = 0;
+    struct elf_file *elf_file = 0;
+    res = elf_load(filename,&elf_file);
+    if (res < 0)
+    {
+        goto out;
+    }
+    
+    process->filetype = PROCESS_FILETYPE_ELF;
+    process->elf_file = elf_file;
+
+out:
+    return res;
+}
+
+// Wrapper function for process_load_binary & process_load_elf
 static int process_load_data(const char *filename, struct process *process)
 {
     int res = 0;
-    res = process_load_binary(filename, process);
+    res = process_load_elf(filename, process);
+
+    //checks if the file isnt a elf file and the loads the binary
+    if (res == -EINFORMAT)
+    {
+        res = process_load_binary(filename, process);
+    }
     return res;
 }
 
@@ -111,11 +137,40 @@ int process_map_binary(struct process *process)
     return res;
 }
 
-// Wrapper function for process_map_binary
+
+/*Diese Funktion lädt das mit process_load_ELF geladene ELF file in den virtual memory. Bei mir heisst das das diese Funktion
+alle user processes in den virtual memory (starting from 0x400000(#define SLOBOS_PROGRAM_VIRTUAL_ADDRESS 0x400000 )) geladen werdem.
+Das bedeutet, dass jeder Process dann seinen eigenen Adressraum hat und nur seinen eigenen Adressraum(4gb) sieht.*/
+int process_map_elf(struct process *process)
+{
+    int res = 0;
+
+    struct elf_file *elf_file = process->elf_file;
+    res = paging_map_to(process->task->page_directory, paging_align_to_lower_page(elf_virtual_base(elf_file)), elf_phys_base(elf_file), paging_align_address(elf_phys_end(elf_file)), PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE);
+    
+    return res;
+}
+
+// Wrapper function for process_map_binary & process_map_elf
 int process_map_memory(struct process *process)
 {
     int res = 0;
-    res = process_map_binary(process);
+
+    //hier wird ausgewählt, welche funktion für das laden des user processes in den virtual memory (adressraum) genutzt werden muss, es gibt zwei arten welche unterstützt werden, elf und binary
+    switch (process->filetype)
+    {
+    case PROCESS_FILETYPE_ELF:
+        res = process_map_elf(process);
+    break;
+
+    case PROCESS_FILETYPE_BINARY:
+        res = process_map_binary(process);
+    break;
+
+    default:
+        panic("process_map_memory: Invalid filetype (not binary and not elf)\n");
+    }
+
     if (res < 0)
     {
         goto out;
