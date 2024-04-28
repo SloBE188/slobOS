@@ -161,8 +161,8 @@ int process_map_elf(struct process *process)
         // anwesend ist und von allen Zugriffsebenen aus zugegriffen werden kann.
         int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
 
-        // Überprüfe, ob das Segment schreibgeschützt ist (PF_W Flag).
-        // Wenn ja, füge das Schreibrecht zur Flag hinzu.
+        // Überprüfe, ob das Segment das Flag PF_W (PF_W Flag) enthält.
+        // Wenn ja, füge das PAGING_IS_WRITEABLE hinzu.
         if (phdr->p_flags & PF_W)
         {
             flags |= PAGING_IS_WRITEABLE;       //hinzufügen vom flag PAGING_IS_WRITEABLE
