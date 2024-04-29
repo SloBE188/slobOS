@@ -2,6 +2,7 @@
 
 
 global print:function    ;the ":function" marks it being a function for the elf loader (symbol)
+global getkey:function
 
 
 ; void print(const char *message)
@@ -14,6 +15,18 @@ print:
     add esp, 4
     pop ebp
     ret
+
+
+;int getkey();
+;eax stores the return value(it can do it as long as the return value isnt bigger than 4 bytes which is the case here)
+getkey:
+    push ebp
+    mov ebp, esp
+    mov eax, 2  ;Command getkey
+    int 0x80
+    pop ebp
+    ret
+
 
 
 
