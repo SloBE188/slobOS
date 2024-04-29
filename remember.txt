@@ -8,6 +8,7 @@ git push origin main
 
 
 target remote | qemu-system-i386 -S -gdb stdio -hda ./os.bin
+add-symbol-file ../build/kernelfull.o 0x100000
 layout asm
 
 
