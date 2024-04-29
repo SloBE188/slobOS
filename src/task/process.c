@@ -362,6 +362,48 @@ int process_switch(struct process *process)
     return 0;
 }
 
+
+//function checks for a free place in the allocations array if it finds one, it returns it. else res = -ENOMEM
+static int process_find_free_allocation_index(struct process *process)
+{
+    int res = -ENOMEM;
+    for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i] == 0)
+        {
+            res = i;
+            break;
+        }
+        
+    }
+    return res;
+
+}
+
+//Malloc function for proceses (systemcall isr80h_command4_malloc, eax 4);
+void *process_malloc(struct process *process, size_t size)
+{
+
+    //allocated memory
+    void *ptr = kzalloc(size);
+    if (!ptr)
+    {
+        return 0;
+    }
+
+    //finds a free place in the array
+    int index = process_find_free_allocation_index(process);
+    if (index < 0)
+    {
+        return 0;
+    }
+    
+    //stores the place in the ptr and returns it
+    process->allocations[index] = ptr;
+    return ptr;
+    
+}
+
 //this function loads a process normal with the "process_load" function and then switches the process to the new loaded process
 int process_load_switch(const char *filename, struct process **process)
 {

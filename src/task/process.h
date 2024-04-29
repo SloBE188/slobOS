@@ -73,6 +73,8 @@ int process_switch(struct process *process);
 int process_load_switch(const char *filename, struct process **process);
 
 
+//memory allocation for processes in userlans
+void *process_malloc(struct process *process, size_t size);
 
 
 #endif

@@ -3,6 +3,7 @@
 
 global print:function    ;the ":function" marks it being a function for the elf loader (symbol)
 global getkey:function
+global slobos_malloc:function
 
 
 ; void print(const char *message)
@@ -24,6 +25,18 @@ getkey:
     mov ebp, esp
     mov eax, 2  ;Command getkey
     int 0x80
+    pop ebp
+    ret
+
+
+;void* slobos_malloc(size_t size)
+slobos_malloc:
+    push ebp
+    mov ebp, esp
+    mov eax, 4  ;command malloc (4)
+    push dword[ebp+8]   ;variable "size"
+    int 0x80
+    add esp, 4      ;restore stack frame
     pop ebp
     ret
 

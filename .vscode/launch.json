@@ -7,9 +7,9 @@
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
-      "externalConsole": false,
-      "cwd": "/home/nilsb/Desktop/slobOS/src/vbe",
-      "program": "/home/nilsb/Desktop/slobOS/src/vbe/build/Debug/outDebug",
+      "externalConsole": true,
+      "cwd": "c:/Users/U29471/slobOS/src",
+      "program": "c:/Users/U29471/slobOS/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

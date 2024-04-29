@@ -8,7 +8,8 @@ enum SystemCommands
     SYSTEM_COMMAND0_SUM,        //This kernel command equals 0. So when i set eax to 0 in a user program, this command gets executed.
     SYSTEM_COMMAND1_PRINT,      //eax 1
     SYSTEM_COMMAND2_GETKEY,      //eax 2
-    SYSTEM_COMMAND3_PUTCHAR     //eax 3
+    SYSTEM_COMMAND3_PUTCHAR,     //eax 3
+    SYSTEM_COMMAND4_MALLOC      //eax 4
 };
 
 #endif
