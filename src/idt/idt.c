@@ -110,6 +110,7 @@ void isr80h_register_command(int command_id, ISR80H_COMMAND command)
         panic("Youre attempting to overwrite a existing commands\n");
     }
 
+    //binds the index from the array "isr80h_commands" to the function responsible for the syscall (with the function pointer "ISR80H_COMMAND").
     isr80h_commands[command_id] = command;
     
     
