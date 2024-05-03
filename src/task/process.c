@@ -404,6 +404,61 @@ void *process_malloc(struct process *process, size_t size)
     
 }
 
+
+//this function is for the process free function (to free memory in processes which i allocated with malloc). it loops threw all the use process allocations
+//and checks if the ptr to the allocation(param ptr) is there or not
+static bool process_is_process_pointer(struct process *process, void *ptr)
+{
+    for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i] == ptr)
+        {
+            return true;
+        }
+        
+    }
+
+    return false;
+    
+}
+
+
+//leaves the "ptr" param from the allocation array in user processes
+static void process_unjoin_allocation_array(struct process *process, void *ptr)
+{
+
+    //loops threw all the process allocations and sets the "ptr" one to 0x00
+    for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i] == ptr)
+        {
+            process->allocations[i] == 0x00;
+        }
+        
+    }
+    
+
+}
+
+//frees memory allocations from processes.
+void process_free(struct process *process, void* ptr)
+{
+    //checks with the process_is_process_pointer functio if the ptr is in the program allocations array or not (if not i cant free it)
+    if (!process_is_process_pointer(process, ptr))
+    {
+        return;
+    }
+
+    //unjoin the allocation array
+    process_unjoin_allocation_array(process, ptr);
+
+    //free the memory
+    kfree(ptr);
+    
+
+}
+
+
 //this function loads a process normal with the "process_load" function and then switches the process to the new loaded process
 int process_load_switch(const char *filename, struct process **process)
 {

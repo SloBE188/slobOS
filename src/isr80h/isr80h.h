@@ -9,7 +9,8 @@ enum SystemCommands
     SYSTEM_COMMAND1_PRINT,      //eax 1
     SYSTEM_COMMAND2_GETKEY,      //eax 2
     SYSTEM_COMMAND3_PUTCHAR,     //eax 3
-    SYSTEM_COMMAND4_MALLOC      //eax 4
+    SYSTEM_COMMAND4_MALLOC,      //eax 4
+    SYSTEM_COMMAND5_FREE            //eax 5
 };
 
 #endif

@@ -10,5 +10,5 @@ void *malloc(size_t size)
 
 void free(void *ptr)
 {
-
+    slobos_free(ptr);
 }

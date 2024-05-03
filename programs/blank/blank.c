@@ -1,26 +1,23 @@
 #include "slobos.h"
 #include "stdlib.h"
 
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     print("Hellouuu\n");
-    void* ptr = malloc(512);
-    if (ptr)
-    {
-        
-    }
-    
+    void *ptr = malloc(512);
+    free(ptr);
+
     while (1)
     {
-
-        if (getkey != 0)
+        if (getkey() != 0)
         {
             print("key pressed\n");
         }
-        
-
     }
-    
+
+    while (1)
+    {
+    }
+
     return 0;
 }

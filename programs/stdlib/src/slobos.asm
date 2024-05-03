@@ -1,9 +1,12 @@
 [BITS 32]
 
 
+section .asm
+
 global print:function    ;the ":function" marks it being a function for the elf loader (symbol)
 global getkey:function
 global slobos_malloc:function
+global slobos_free:function
 
 
 ; void print(const char *message)
@@ -38,6 +41,19 @@ slobos_malloc:
     int 0x80
     add esp, 4      ;restore stack frame
     pop ebp
+    ret
+
+
+
+; void slobos_free(void *ptr)
+slobos_free:
+    push ebp
+    mov ebp, esp
+    mov eax, 5      ;command 5 free in the int 80
+    push dword[ebp+8]   ;Variable "ptr"
+    int 0x80
+    add esp, 4
+    pop esp
     ret
 
 

@@ -96,7 +96,7 @@ void idt_init()
 
 }
 
-/*This function will simply register command functions and bind the command number (command_id) to the function pointer specified in the
+/*This function will simply register command functions and bind the command number (command_id(this is the value in eax, in c i represent it in a enum "System Commands")) to the function pointer specified in the
 command variable. After the registration is completed the command can be executed through the user process by specyfying the
 command_id into the EAX reg :))))*/
 void isr80h_register_command(int command_id, ISR80H_COMMAND command)
