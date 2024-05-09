@@ -63,7 +63,7 @@ static int process_load_binary(const char* filename, struct process *process)
         goto out;
     }
 
-    // Reserviert Speicher für den process/programm.
+    // Reserviert Speicher für den process/programm. Dieser speicher wird später mit der process map binary funktion in den adressraum geladen und es werden virtuelle adresse zu diesem allocated memory zugewiesen mit der paging_map_to function
     void *program_data_ptr = kzalloc(stat.filesize);        //->kernel sieht direkt diese adresse von kzalloc zurückgegeben.
 
     if (!program_data_ptr)
@@ -226,7 +226,7 @@ out:
 
 // Lädt und initialisiert einen Prozess für einen mit param "process_slot" gegebenen Slot also im array processes was ganz oben definiert ist.
 // Mit dem einfügen eines processes in den gegebenen slot wird auch möglich gemacht, das man zum beispiel mit einem key auf dem keyboard
-// z.B. "F2" einen process in den process slot beim array "processes" in den slot 2 laden könnte
+// z.B. "F2" einen nprocess in den process slot beim array "processes" in den slot 2 laden könnte
 // Die funktion allocated auch memory für den prozess.
 // EIgentlich bringt diese Funktion alle zuvor erstellten funktionen zusammen.
 int process_load_for_slot(const char *filename, struct process **process, int process_slot)

@@ -5,7 +5,7 @@ int main(int argc, char **argv)
 {
     print("Hellouuu\n");
     void *ptr = malloc(512);
-    free(ptr);
+    //free(ptr);
 
     while (1)
     {
