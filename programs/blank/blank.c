@@ -5,6 +5,7 @@
 int main(int argc, char **argv)
 {
     print("*********WELCOME TO SLOBOS*********\n");
+    printf("My age is %i\n", 98);
     print(itoa(38));
     putchar('B');
     void *ptr = malloc(512);
