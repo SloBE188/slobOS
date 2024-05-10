@@ -239,7 +239,7 @@ int elf_load(const char *filename, struct elf_file **file_out)
         goto out;
     }
     
-    elf_file->elf_memory = kzalloc(stat.filesize);      //reserviert speicher auf dem heap for the whole elf file
+    elf_file->elf_memory = kzalloc(stat.filesize);      //reserviert speicher auf dem heap for the whole elf file, this allocated memory is curr not virtual, it gets after the paging_map_elf function
     res = fread(elf_file->elf_memory, stat.filesize, 1, fd);    //reading the entire file into memory
     if (res < 0)
     {

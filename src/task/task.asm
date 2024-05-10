@@ -7,7 +7,8 @@ global user_registers
 
 ;void task_return(struct registers* regs);
 ;this label is responsible for forcing the os from kernel land into user land where the CPU will begin executing the user process code.
-;it simulates the behavior of returning from an interrupt to seamlessly transition the CPU from kernel mode to user mode.
+;it simulates the behavior of returning from an interrupt (this label just makes it manual so we are in user mode, later a lot of this gets done automatically by the cpu but the first time i go to userland i have to do it manual so iam in userland) 
+;to seamlessly transition the CPU from kernel mode to user mode.
 ;Die Funktion task_return ist verantwortlich für den Übergang vom Kernel-Modus in den User-Modus.
 task_return:
 

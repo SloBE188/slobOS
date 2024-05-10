@@ -37,7 +37,7 @@ struct idtr_desc
 }__attribute__((packed));
 
 
-//C structure for the general purpose registers (label in asm (task.asm)). this structure is easy accesible for the kernel more information to it in this function: task_save_state
+//C structure for the general purpose registers (label in asm (task.asm)) & the user processes segment. this structure is easy accesible for the kernel more information to it in this function: task_save_state
 struct interrupt_frame
 {
     uint32_t edi;

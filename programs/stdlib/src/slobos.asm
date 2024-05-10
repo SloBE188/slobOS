@@ -53,7 +53,7 @@ slobos_free:
     push dword[ebp+8]   ;Variable "ptr"
     int 0x80
     add esp, 4
-    pop esp
+    pop ebp
     ret
 
 
