@@ -1,5 +1,5 @@
-#ifndef STDLIB_H
-#define STDLIB_H
+#ifndef SLOBOS_STDLIB_H
+#define SLOBOS_STDLIB_H
 
 #include <stddef.h>
 
