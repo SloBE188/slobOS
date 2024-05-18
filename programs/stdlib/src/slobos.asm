@@ -4,7 +4,7 @@
 section .asm
 
 global print:function    ;the ":function" marks it being a function for the elf loader (symbol)
-global getkey:function
+global slobos_getkey:function
 global slobos_malloc:function
 global slobos_free:function
 global slobos_putchar:function
@@ -24,7 +24,7 @@ print:
 
 ;int getkey();
 ;eax stores the return value(it can do it as long as the return value isnt bigger than 4 bytes which is the case here)
-getkey:
+slobos_getkey:
     push ebp
     mov ebp, esp
     mov eax, 2  ;Command getkey
@@ -67,6 +67,8 @@ slobos_free:
     add esp, 4
     pop ebp
     ret
+
+
 
 
 

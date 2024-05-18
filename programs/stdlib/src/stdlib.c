@@ -1,7 +1,7 @@
 #include "stdlib.h"
 #include "slobos.h"
 
-
+/*This function when provided with a number will return a ASCII printable character array repüresentation of the numerical number entered*/
 char* itoa(int i)
 {
     static char text[12];       // Ein statischer Puffer von 12 Zeichen, der global und nicht im Stack gespeichert wird wegen static. 

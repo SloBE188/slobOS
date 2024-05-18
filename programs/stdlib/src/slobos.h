@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 void print(const char *message);
-int getkey();
+int slobos_getkey();
 void *slobos_malloc(size_t size);
 void slobos_free(void *ptr);
 int slobos_putchar(int c);

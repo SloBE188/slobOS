@@ -14,7 +14,7 @@ extern void* interrupt_pointer_table[SLOBOS_TOTAL_INTERRUPTS];
 
 /*Here the function pointers to the C interrupt handlers get stored.
 Der Index des Arrays steht für die Nummber des Interrupts, während der darin gespeicherte Pointer
-auf den Handler des Interrupts zeigt. Index 1 im Array wäre ein Funktionszeiger auf die Funktion,
+auf den Handler (C function) des Interrupts zeigt. Index 1 im Array wäre ein Funktionszeiger auf die Funktion,
 welche für Interrupt 1 verantwortlich ist.*/
 static INTERRUPT_CALLBACK_FUNCTION interrupt_callbacks[SLOBOS_TOTAL_INTERRUPTS];
 
