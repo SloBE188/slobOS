@@ -4,10 +4,10 @@
 int main(int argc, char** argv)
 {
 
-    printf("My age is %i\n", 98);
-    
-    print("Hello how are you!\n");
+    printf("My age is %i\n", 19);
 
+
+    /*
     print(itoa(8763));
 
     putchar('Z');
@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     slobos_terminal_readline(buf, sizeof(buf), true);
 
     print(buf);
-
+    */
     while(1) 
     {
     }

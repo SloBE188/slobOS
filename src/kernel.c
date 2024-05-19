@@ -269,10 +269,10 @@ void kernel_main()
 
 
     struct process* process = 0;
-    int res = process_load_switch("0:/blank.elf", &process);
+    int res = process_load_switch("0:/shell.elf", &process);
     if (res != SLOBOS_ALL_OK)
     {
-        panic("Failed to load blank file\n");
+        panic("Failed to load shell.elf\n");
     }
 
     //switches to the first task in the linked list and executes it
