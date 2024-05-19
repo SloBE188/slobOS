@@ -8,6 +8,7 @@ global slobos_getkey:function
 global slobos_malloc:function
 global slobos_free:function
 global slobos_putchar:function
+global slobos_process_load_from_shell:function
 
 
 ; void print(const char *message)
@@ -68,6 +69,17 @@ slobos_free:
     pop ebp
     ret
 
+
+;void slobos_process_load_from_shell(const char *filename);
+slobos_process_load_from_shell:
+    push ebp
+    mov ebp, esp
+    mov eax, 6
+    push dword[ebp+8]
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
 
 
 

@@ -10,7 +10,8 @@ enum SystemCommands
     SYSTEM_COMMAND2_GETKEY,      //eax 2
     SYSTEM_COMMAND3_PUTCHAR,     //eax 3
     SYSTEM_COMMAND4_MALLOC,      //eax 4
-    SYSTEM_COMMAND5_FREE            //eax 5
+    SYSTEM_COMMAND5_FREE,            //eax 5
+    SYSTEM_COMMAND6_PROCESS_LOAD_FROM_SHELL     //eax 6
 };
 
 #endif

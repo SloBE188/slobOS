@@ -7,5 +7,5 @@ section .asm
 
 
 _start:
-    call main   ;call th C function from blank.c
+    call main   ;call th C function from blank.c or shell.c
     ret     ;terminate the process
