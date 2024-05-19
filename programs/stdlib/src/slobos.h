@@ -11,7 +11,11 @@ void slobos_free(void *ptr);
 int slobos_putchar(int c);
 
 
+//shell things
 void slobos_terminal_readline(char *out, int max, bool output_while_typing);
 int slobos_getkeybock();
+void slobos_process_load_from_shell(const char *filename);
+
+
 
 #endif

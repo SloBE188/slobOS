@@ -72,14 +72,14 @@ slobos_free:
 
 ;void slobos_process_load_from_shell(const char *filename);
 slobos_process_load_from_shell:
-    push ebp
-    mov ebp, esp
-    mov eax, 6
-    push dword[ebp+8]
-    int 0x80
-    add esp, 4
-    pop ebp
-    ret
+    push ebp                    ;save base pointer on the stack
+    mov ebp, esp                ;set stack pointer to base pointer
+    mov eax, 6                  ;syscall 6 (isr80h_command6_process_load_from_shell-> starts a process)
+    push dword[ebp+8]           ;push "filename" argument to the stack
+    int 0x80                    ;invokes syscall 0x80 (used for syscalls)
+    add esp, 4                  ;cleans the stack up 
+    pop ebp                     ;restore the base pointer
+    ret                         ;returns
 
 
 

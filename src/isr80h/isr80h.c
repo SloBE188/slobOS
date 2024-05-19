@@ -15,5 +15,5 @@ void isr80h_register_commands()
     isr80h_register_command(SYSTEM_COMMAND3_PUTCHAR, isr80h_command3_putchar);
     isr80h_register_command(SYSTEM_COMMAND4_MALLOC, isr80h_command4_malloc);
     isr80h_register_command(SYSTEM_COMMAND5_FREE, isr80h_command5_free);
-    isr80h_register_command(SYSTEM_COMMAND6_PROCESS_LOAD_FROM_SHELL, isr80h_command_process_load_from_shell);
+    isr80h_register_command(SYSTEM_COMMAND6_PROCESS_LOAD_FROM_SHELL, isr80h_command6_process_load_from_shell);
 }
