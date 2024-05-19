@@ -1,27 +1,27 @@
 #include "slobos.h"
 #include "stdlib.h"
 #include "stdio.h"
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    print("*********WELCOME TO SLOBOS*********\n");
+
     printf("My age is %i\n", 98);
-    print(itoa(38));
-    putchar('B');
-    void *ptr = malloc(512);
+    
+    print("Hello how are you!\n");
+
+    print(itoa(8763));
+
+    putchar('Z');
+
+    void* ptr = malloc(512);
     free(ptr);
 
-    while (1)
-    {
-        if (getkey() != 0)
-        {
-            print("key pressed\n");
-        }
-    }
+    char buf[1024];
+    slobos_terminal_readline(buf, sizeof(buf), true);
 
-    while (1)
+    print(buf);
+
+    while(1) 
     {
     }
-
     return 0;
 }

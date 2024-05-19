@@ -5,16 +5,14 @@
 
 
 //function loops until a key is pressed, if a key is pressed, it returns th keys integer value
-int slobos_getkeybock()
+int slobos_getkeyblock()
 {
-
     int val = 0;
     do
     {
         val = slobos_getkey();
-    } while (val == 0);
-    
-
+    }
+    while(val == 0);
     return val;
 }
 
@@ -29,36 +27,36 @@ it loops until the max character count is read or the enter key is pressed. the 
 Backspaces are handled by checking for the kex 0x08 and if its not at the inputs's start. the output strings current character becomes null
 and the loop counter decrements by e (given the upcoming increment by 1 at the loops conclusion)
 */
-void slobos_terminal_readline(char *out, int max, bool output_while_typing)
+void slobos_terminal_readline(char* out, int max, bool output_while_typing)
 {
-
     int i = 0;
-    for (int i = 0; i < max; i++)
+    for (i = 0; i < max -1; i++)
     {
-        char key = slobos_getkeybock();
+        char key = slobos_getkeyblock();
 
-        //ewhen the user klicks on enter it has read the line (line ended)
+        // user klicks enter 
         if (key == 13)
         {
             break;
         }
+
         if (output_while_typing)
         {
             slobos_putchar(key);
         }
 
+        // Backspace
         if (key == 0x08 && i >= 1)
         {
             out[i-1] = 0x00;
-            //-2 beacuse i will +1 when it continues
+            // -2 because i will +1 when i continue
             i -= 2;
             continue;
         }
-    out[i] = key;
-                      
+
+        out[i] = key;
     }
 
-    //Add the null terminator
-    out[i] == 0x00;
-    
+    // Add the null terminator
+    out[i] = 0x00;
 }
