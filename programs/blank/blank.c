@@ -5,6 +5,7 @@ int main(int argc, char** argv)
 {
 
     printf("My age is %i\n", 19);
+    printf("SLOBOS AMOGUS BLANK.ELF PROGRAMM");
 
 
     /*
