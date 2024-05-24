@@ -10,7 +10,7 @@
 
 typedef unsigned char PROCESS_FILETYPE;
 
-
+//process allocation struct for processes so i know the size of the allocation, before i only knew the location.
 struct process_allocation
 {
     void *ptr;

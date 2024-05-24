@@ -459,6 +459,21 @@ static void process_unjoin_allocation_array(struct process *process, void *ptr)
 
 }
 
+static struct process_allocation *process_get_allocation_by_addr(struct process *process, void *addr)
+{
+
+    for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i].ptr == addr)
+        {
+            return &process->allocations[i].ptr;
+        }
+        
+    }
+    return 0;
+    
+}
+
 //frees memory allocations from processes.
 void process_free(struct process *process, void* ptr)
 {
@@ -467,6 +482,19 @@ void process_free(struct process *process, void* ptr)
     {
         return;
     }
+
+    //unlink the pages from the process for the given address
+    struct process_allocation *allocation = process_get_allocation_by_addr(process, ptr);
+    if (!allocation)
+    {
+        return;
+    }
+    int res = paging_map_to(process->task->page_directory, allocation->ptr, allocation->ptr, paging_align_address(allocation->ptr+allocation->size), 0x00);
+    if (res < 0)
+    {
+        return;
+    }
+    
 
     //unjoin the allocation array
     process_unjoin_allocation_array(process, ptr);
