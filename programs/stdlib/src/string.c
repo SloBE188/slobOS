@@ -1,6 +1,6 @@
 #include "string.h"
 
-
+// Diese Funktion wandelt einen Großbuchstaben in einen Kleinbuchstaben um.
 char tolower(char s1)
 {
     if (s1 >= 65 && s1 <= 90)
@@ -24,6 +24,7 @@ int strlen(const char* ptr)
     return i;
 }
 
+// Diese Funktion zählt die Anzahl der Zeichen in einem String bis zu einer maximalen Anzahl oder einem Terminator-Zeichen.
 int strnlen_terminator(const char* str, int max, char terminator)
 {
     int i = 0;
@@ -36,6 +37,7 @@ int strnlen_terminator(const char* str, int max, char terminator)
     return i;
 }
 
+// Diese Funktion vergleicht zwei Strings ohne Berücksichtigung der Groß-/Kleinschreibung über eine bestimmte Anzahl von Zeichen.
 int istrncmp(const char* s1, const char* s2, int n)
 {
     unsigned char u1, u2;
@@ -51,6 +53,8 @@ int istrncmp(const char* s1, const char* s2, int n)
 
     return 0;
 }
+
+// Diese Funktion vergleicht zwei Strings über eine bestimmte Anzahl von Zeichen.
 int strncmp(const char* str1, const char* str2, int n)
 {
     unsigned char u1, u2;
@@ -82,7 +86,7 @@ int strnlen(const char* ptr, int max)
 }
 
 
-//This function will return true if the given character is a digit character int the ASCII table
+// Diese Funktion prüft, ob ein Zeichen eine Ziffer im ASCII-Code ist.
 bool isdigit(char c)
 {
     return c >= 48 && c <= 57;
@@ -94,6 +98,7 @@ int tonumericdigit(char c)
     return c - 48;
 }
 
+// Diese Funktion kopiert einen String von der Quelle zum Ziel
 char* strcpy(char* dest, const char* src)
 {
     char* res = dest;
@@ -110,6 +115,7 @@ char* strcpy(char* dest, const char* src)
     
 }
 
+// Diese Funktion kopiert eine bestimmte Anzahl von Zeichen von der Quelle zum Ziel.
 char* strncpy(char* dest, const char* src, int count)
 {
     int i = 0;
@@ -126,6 +132,8 @@ char* strncpy(char* dest, const char* src, int count)
 }
 
 
+// Diese Funktion zerlegt einen String in Tokens, die durch die angegebenen Trennzeichen getrennt sind.
+// Dafür braucht sie eine globale variable (sp)
 char* sp = 0;
 char* strtok(char* str, const char* delimiters)
 {

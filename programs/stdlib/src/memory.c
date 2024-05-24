@@ -1,6 +1,6 @@
 #include "memory.h"
 
-
+// Diese Funktion setzt einen Speicherblock auf einen bestimmten Wert.
 void* memset(void* ptr, int c, size_t size)
 {
     char* c_ptr = (char*) ptr;
@@ -30,6 +30,7 @@ int memcmp(void* s1, void* s2, int count)
     return 0;
 }
 
+// Diese Funktion kopiert einen Speicherblock von der Quelle zum Ziel.
 void* memcpy(void* dest, void* src, int len)
 {
     char *d = dest;
