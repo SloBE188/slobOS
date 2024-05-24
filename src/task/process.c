@@ -369,7 +369,7 @@ static int process_find_free_allocation_index(struct process *process)
     int res = -ENOMEM;
     for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
     {
-        if (process->allocations[i] == 0)
+        if (process->allocations[i].ptr == 0)
         {
             res = i;
             break;
@@ -398,7 +398,7 @@ void *process_malloc(struct process *process, size_t size)
         goto out_error;
     }
     
-    //map the allocated memory to the processes adressraum so i can use it. If i dont do this a page fault occurs
+    //map the allocated memory to the processes adressraum so i can use it in the process. If i dont do this a page fault occurs
     int res = paging_map_to(process->task->page_directory, ptr, ptr, paging_align_address(ptr+size), PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
 
     //check if the memory map was succesfull
@@ -408,7 +408,8 @@ void *process_malloc(struct process *process, size_t size)
     }
     
     //stores the place in the ptr and returns it
-    process->allocations[index] = ptr;
+    process->allocations[index].ptr = ptr;
+    process->allocations[index].size = size;
     return ptr;
 
 out_error:
@@ -428,7 +429,7 @@ static bool process_is_process_pointer(struct process *process, void *ptr)
 {
     for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
     {
-        if (process->allocations[i] == ptr)
+        if (process->allocations[i].ptr == ptr)
         {
             return true;
         }
@@ -447,9 +448,10 @@ static void process_unjoin_allocation_array(struct process *process, void *ptr)
     //loops threw all the process allocations and sets the "ptr" one to 0x00
     for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
     {
-        if (process->allocations[i] == ptr)
+        if (process->allocations[i].ptr == ptr)
         {
-            process->allocations[i] == 0x00;
+            process->allocations[i].ptr = 0x00;
+            process->allocations[i].size = 0;
         }
         
     }

@@ -11,6 +11,13 @@
 typedef unsigned char PROCESS_FILETYPE;
 
 
+struct process_allocation
+{
+    void *ptr;
+    size_t size;
+};
+
+
 //ein process besteht aus einem oder mehreren tasks. ein process ist ein running program auf dem system.
 struct process
 {
@@ -25,8 +32,8 @@ struct process
     struct task *task;
 
     //The memory allocations made by this process
-    void *allocations[SLOBOS_MAX_PROGRAM_ALLOCATIONS];  //This is a array holding the memory allocations belonging to this process.
-
+    //void *allocations[SLOBOS_MAX_PROGRAM_ALLOCATIONS];  //This is a array holding the memory allocations belonging to this process.
+    struct process_allocation allocations[SLOBOS_MAX_PROGRAM_ALLOCATIONS];
 
     //The file can either be binary or elf (as defined above PROCESS_FILETYPE_ELF, PROCESS_FILETYPE_BINARY)
     PROCESS_FILETYPE filetype;

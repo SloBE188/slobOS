@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     //check if malloc works now
     char *ptr = malloc(20);
     strcpy(ptr, "does it work?");
-    print(ptr);
+    print(ptr); 
     /*
     char words[] = "hello does it work";
 
