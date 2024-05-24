@@ -11,7 +11,11 @@ int main(int argc, char** argv)
     printf("My age is %i\n", 19);
     printf("SLOBOS AMOGUS BLANK.ELF PROGRAMM");
 
-
+    //check if malloc works now
+    char *ptr = malloc(20);
+    strcpy(ptr, "does it work?");
+    print(ptr);
+    /*
     char words[] = "hello does it work";
 
     const char* token = strtok(words, " ");
@@ -20,6 +24,7 @@ int main(int argc, char** argv)
         printf("%s\n", token);
         token = strtok(NULL, " ");
     }
+    */
     
 
     /*

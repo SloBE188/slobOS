@@ -388,19 +388,36 @@ void *process_malloc(struct process *process, size_t size)
     void *ptr = kzalloc(size);
     if (!ptr)
     {
-        return 0;
+        goto out_error;
     }
 
     //finds a free place in the array
     int index = process_find_free_allocation_index(process);
     if (index < 0)
     {
-        return 0;
+        goto out_error;
+    }
+    
+    //map the allocated memory to the processes adressraum so i can use it. If i dont do this a page fault occurs
+    int res = paging_map_to(process->task->page_directory, ptr, ptr, paging_align_address(ptr+size), PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+    //check if the memory map was succesfull
+    if (res < 0)
+    {
+        goto out_error;
     }
     
     //stores the place in the ptr and returns it
     process->allocations[index] = ptr;
     return ptr;
+
+out_error:
+    if (ptr)
+    {
+        kfree(ptr);
+    }
+
+    return 0;
     
 }
 
