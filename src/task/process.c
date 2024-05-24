@@ -489,6 +489,9 @@ void process_free(struct process *process, void* ptr)
     {
         return;
     }
+
+    //here the magic (unlink the pages from the previos allocated memory) happens. I can do this with the paging_map_to function
+    //so i simply map it again but this time without the flags (is present, access from all, writeable), this time i set the flags to 0x00 so the process wont be able to access it again.(the kernel can, he can access everything)
     int res = paging_map_to(process->task->page_directory, allocation->ptr, allocation->ptr, paging_align_address(allocation->ptr+allocation->size), 0x00);
     if (res < 0)
     {
