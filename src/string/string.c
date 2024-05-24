@@ -124,3 +124,62 @@ char* strncpy(char* dest, const char* src, int count)
     dest[i] = 0x00;
     return dest;
 }
+
+
+char* sp = 0;
+char* strtok(char* str, const char* delimiters)
+{
+    int i = 0;
+    int len = strlen(delimiters);
+    if (!str && !sp)
+        return 0;
+
+    if (str && !sp)
+    {
+        sp = str;
+    }
+
+    char* p_start = sp;
+    while(1)
+    {
+        for (i = 0; i < len; i++)
+        {
+            if(*p_start == delimiters[i])
+            {
+                p_start++;
+                break;
+            }
+        }
+
+        if (i == len)
+        {
+            sp = p_start;
+            break;
+        }
+    }
+
+    if (*sp == '\0')
+    {
+        sp = 0;
+        return sp;
+    }
+
+    // Find end of substring
+    while(*sp != '\0')
+    {
+        for (i = 0; i < len; i++)
+        {
+            if (*sp == delimiters[i])
+            {
+                *sp = '\0';
+                break;
+            }
+        }
+
+        sp++;
+        if (i < len)
+            break;
+    }
+
+    return p_start;
+}

@@ -7,7 +7,10 @@
     "charconv": "c",
     "paging.h": "c",
     "config.h": "c",
-    "format": "c"
+    "format": "c",
+    "shell.h": "c",
+    "stdbool.h": "c",
+    "string.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

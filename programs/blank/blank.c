@@ -1,12 +1,26 @@
 #include "slobos.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "string.h"
+
+
+
 int main(int argc, char** argv)
 {
 
     printf("My age is %i\n", 19);
     printf("SLOBOS AMOGUS BLANK.ELF PROGRAMM");
 
+
+    char words[] = "hello does it work";
+
+    const char* token = strtok(words, " ");
+    while(token)
+    {
+        printf("%s\n", token);
+        token = strtok(NULL, " ");
+    }
+    
 
     /*
     print(itoa(8763));
