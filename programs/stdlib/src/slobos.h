@@ -5,10 +5,11 @@
 #include <stdbool.h>
 
 
+//linked list Struktur für process arguments. Jede Struktur hat ein Argument und einen Pointer auf das nächste Argument.
 struct command_argument
 {
     char argument[512];
-    struct command_argument *next;
+    struct command_argument *next;  //Pointer zum nächsten Argument in der linked list
 };
 
 void print(const char *message);

@@ -3,35 +3,45 @@
 
 
 
-//this function parses the given command arguments into diffrent command arguments (z.B. BLANK.ELF hallo)
+/*
+This function parses the given command arguments into diffrent command arguments (z.B. BLANK.ELF hallo)
+@param command = Pointer zu der Zeichenkette (Befehlszeile)
+@param max = max. Anzahl von Zeichen
+
+*/
 struct command_argument* slobos_parse_command(const char *command, int max)
 {
-    struct command_argument* root_command = 0;
-    char scommand[1024];
-    if (max >= (int) sizeof(scommand))
+    struct command_argument* root_command = 0;          //Die erste command_argument struktur
+    char scommand[1024];                                //temporärer buffer welcher dann "command" speichert
+    if (max >= (int) sizeof(scommand))                  //check ob "max" grösser als der buffer ist (darf nicht)
     {
         return 0;
     }
 
 
-    strncpy(scommand, command, sizeof(scommand));
-    char* token = strtok(scommand, " ");
+    strncpy(scommand, command, sizeof(scommand));       //kopiert den param "command" in den temporären buffer "scommand"
+    char* token = strtok(scommand, " ");                //die funktion strtok unterteilt die Zeichenkette (scommand) nach dem ersten Leerzeichen
     if (!token)
     {
         goto out;
     }
 
-    root_command = slobos_malloc(sizeof(struct command_argument));
+    root_command = slobos_malloc(sizeof(struct command_argument));  //speicher initialisieren für dioe erste command_argument Struktur
     if (!root_command)
     {
         goto out;
     }
 
-    strncpy(root_command->argument, token, sizeof(root_command->argument));
-    root_command->next = 0;
+    strncpy(root_command->argument, token, sizeof(root_command->argument)); //das erste argument (token) wird in die "argument" variable der root_command struktur kopiert
+    root_command->next = 0;     //die nächste struktur wird auf 0 gesetzt, da dies vorerst das einige Element in der Liste ist
 
 
-    struct command_argument* current = root_command;
+    struct command_argument* current = root_command;        //pointer auf das aktuelle elem in der Linked List
+
+    //in der while schleife werden die restlichen tokens extrahiert
+    //für jedes token wird eine neue command_argument struktur erstellt und initialisiert
+    //die neue struktur wird immer an das Ende der Liste angehängt (current->next = new_command;)
+    //current wird immer aktualisiert, um auf das Ende der Liste zu zeigen (current = new_command;)
     token = strtok(NULL, " ");
     while(token != 0)
     {
@@ -47,6 +57,8 @@ struct command_argument* slobos_parse_command(const char *command, int max)
         current = new_command;
         token = strtok(NULL, " ");
     }
+
+//das out label  gibt root_command zurücj, das auf das erste Element in der Linked list zeigt
 out:
     return root_command;
 }
