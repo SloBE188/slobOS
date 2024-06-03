@@ -244,7 +244,8 @@ int paging_map_range(struct paging_4gb_chunk* directory, void* virt, void* phys,
 }
 
 /*For copying strings from a user process to into kernel memory i have to implement the ability to get a page table entry
-from a given page directory. This shit is what this function does.*/
+from a given page directory. This functio  retrieves the page table entry for a given virtual address by determiuning the 
+directory and table indexes, and then accessing the appropriate page table to fetch the entry.*/
 uint32_t paging_get(uint32_t* directory, void* virt)
 {
     uint32_t directory_index = 0;
@@ -253,4 +254,15 @@ uint32_t paging_get(uint32_t* directory, void* virt)
     uint32_t entry = directory[directory_index];
     uint32_t* table = (uint32_t*)(entry & 0xffff000);
     return table[table_index];
+}
+
+
+/*This function alculates the physical address corresponding to a given virtual address by aligning the virtual
+address toi the lower poage boundary, finding the difference between the original virtual address and the aligned virtual address.
+Then it uses the paging_get function to get the physical address and adjusting it with the difference*/
+void *paging_get_physical_address(uint32_t *directory_entry, void *virt)
+{
+    void *virt_addr_new = (void*) paging_align_to_lower_page(virt);     //align the virtual address to the lower page
+    void *difference = (void*) ((uint32_t) virt - (uint32_t) virt_addr_new);    //calculate the difference between the given virtual address and the paging aligned address (if the virtual addres is higher than 4096(every page is 4096 in my os) there will be a difference)
+    return (void*)((paging_get(directory_entry, virt_addr_new) & 0xfffff000) + difference);
 }

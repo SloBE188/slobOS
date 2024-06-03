@@ -51,7 +51,20 @@ out:
     return 0;
 }
 
-void *isr80h_command7_invoke_system_command(struct interrupt_frame * frame)
+void *isr80h_command7_invoke_system_command(struct interrupt_frame *frame)
 {
     return 0;
+}
+
+
+//this syscall gets the process arguments
+void *isr80h_command8_get_program_arguments(struct interrupt_frame *frame)
+{
+
+    struct process *process = task_current()->process;
+    struct process_arguments *arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));
+
+    process_get_arguments(process, &arguments->argc, &arguments->argv);
+    return 0;
+
 }

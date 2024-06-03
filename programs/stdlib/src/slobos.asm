@@ -9,6 +9,7 @@ global slobos_malloc:function
 global slobos_free:function
 global slobos_putchar:function
 global slobos_process_load_from_shell:function
+global slobos_process_get_arguments:function
 
 
 ; void print(const char *message)
@@ -80,6 +81,19 @@ slobos_process_load_from_shell:
     add esp, 4                  ;cleans the stack up 
     pop ebp                     ;restore the base pointer
     ret                         ;returns
+
+
+;void slobos_process_get_arguments(struct process_arguments *arguments)
+slobos_process_get_arguments:
+    push ebp
+    mov ebp, esp
+    mov eax, 8  ; Syscall 8 -> gets the process arguments
+    push dword[ebp+8]   ;variable arguments (struct process_arguments)
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
 
 
 

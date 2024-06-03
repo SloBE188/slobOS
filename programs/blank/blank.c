@@ -8,6 +8,10 @@
 int main(int argc, char** argv)
 {
 
+
+    struct process_arguments arguments;
+    slobos_process_get_arguments(&arguments);
+    printf("%i %s", arguments.argc, arguments.argv[0]);
     printf("My age is %i\n", 19);
     printf("SLOBOS AMOGUS BLANK.ELF PROGRAMM");
 

@@ -17,7 +17,7 @@ struct process_allocation
     size_t size;
 };
 
-//linked list Struktur für process arguments. Jede Struktur hat ein Argument und einen Pointer auf das nächste Argument.
+//linked list Struktur für process argumente. Jede Struktur hat ein Argument und einen Pointer auf das nächste Argument.
 struct command_argument
 {
     char argument[512];
@@ -27,8 +27,8 @@ struct command_argument
 //structure which represents arguments for a process
 struct process_arguments
 {
-    int argc;
-    char** argv;
+    int argc;               //enthält anzahl an argumenten
+    char** argv;            //array welches alle argumente enthält
 };
 
 
