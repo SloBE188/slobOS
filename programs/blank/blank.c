@@ -8,8 +8,9 @@
 int main(int argc, char** argv)
 {
 
+    print(argv[0]);
 
-    struct process_arguments arguments;
+    /*truct process_arguments arguments;
     slobos_process_get_arguments(&arguments);
     printf("%i %s", arguments.argc, arguments.argv[0]);
     printf("My age is %i\n", 19);
@@ -23,7 +24,7 @@ int main(int argc, char** argv)
     char str[] = "hello slobeworld";
     struct command_argument* root_command = slobos_parse_command(str, sizeof(str));
     printf("%s\n", root_command->argument);
-    printf("%s\n", root_command->next->argument);
+    printf("%s\n", root_command->next->argument);*/
     /*
     char words[] = "hello does it work";
 
