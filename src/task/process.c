@@ -604,3 +604,113 @@ int process_load_switch(const char *filename, struct process **process)
 
     return res;
 }
+
+//this function loops threw all 1024 program allocations and frees them with the "process_free" function
+int process_terminate_allocations(struct process *process)
+{
+
+    for (int i = 0; i < SLOBOS_MAX_PROGRAM_ALLOCATIONS; i++)
+    {
+        process_free(process, process->allocations[i].ptr);
+    }
+    
+    return 0;
+}
+
+//frees the memory of a binary program
+int process_free_binary_data(struct process *process)
+{
+
+    kfree(process->ptr);
+    return 0;
+}
+
+//frees the memory of a elf program
+int process_free_elf_data(struct process *process)
+{
+    elf_close(process->elf_file);
+}
+
+
+//chooses between a elf and a binary program and then frees up the memory for it
+int process_free_program_data(struct process *process)
+{
+
+    int res = 0;
+    switch (process->filetype)
+    {
+    case PROCESS_FILETYPE_ELF:
+        res = process_free_elf_data(process);
+        break;
+
+    case PROCESS_FILETYPE_BINARY:
+        res = process_free_binary_data(process);
+    
+    default:
+        res = -EINVARG;
+        break;
+    }
+
+    return res;
+
+}
+
+//this function loops threw all processes and switches to the first true one, if there is noone, the kernel panics
+void process_switch_to_any()
+{
+
+    for (int i = 0; i < SLOBOS_MAX_PROCESSES; i++)
+    {
+        if (process[i])
+        {
+            process_switch(process[i]);
+            return;
+        }
+    
+    }
+
+    panic("No processes to switch to\n");
+    
+}
+
+//diese Funktion entfernt den gegebenen Prozess aus dem "processes" array. Falls der aktuelle process übergeben wird, wechselt es zu einem beliebigen prozess
+static void process_unlink(struct process *process)
+{
+    processes[process->id] = 0x00;
+
+    //if process is the current process, it switches to a random process
+    if (current_process == process)
+    {
+        process_switch_to_any();
+    }
+    
+}
+
+
+//brings all the functions together for terminating a process
+int process_terminate(struct process* process)
+{
+    int res = 0;
+
+    res = process_terminate_allocations(process);
+    if (res < 0)
+    {
+        goto out;
+    }
+
+    res = process_free_program_data(process);
+    if (res < 0)
+    {
+        goto out;
+    }
+
+    // Free the process stack memory.
+    kfree(process->stack);
+    // Free the task
+    task_free(process->task);
+    // Unlink the process from the process array.
+    process_unlink(process);
+
+out:
+    return res;
+}

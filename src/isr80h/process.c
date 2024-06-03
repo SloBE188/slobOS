@@ -51,6 +51,8 @@ out:
     return 0;
 }
 
+
+//With this function i can load a other process with arguments from the shell. So this syscall is basically a upgraded version of the syscall 6
 void *isr80h_command7_invoke_system_command(struct interrupt_frame *frame)
 {
     struct command_argument* arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));  //returns the physical addres which the kernel can access
