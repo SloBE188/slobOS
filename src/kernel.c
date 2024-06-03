@@ -275,10 +275,14 @@ void kernel_main()
         panic("Failed to load shell.elf\n");
     }
 
+
+    //Create a argument with the value (argv) "Testing"
     struct command_argument argument;
-    strcpy(argument.argument, "Testing");       //passing "testing" as the first process argument
+    strcpy(argument.argument, "Testing");       //copy the string "Testing" into the before created "command_argument" structure
     argument.next = 0x00;
 
+
+    //inject the argument with the value  into the process
     process_inject_arguments(process, &argument);
 
     //switches to the first task in the linked list and executes it
