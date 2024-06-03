@@ -50,3 +50,8 @@ out:
     // Rückgabewert der Funktion. Hier wird immer 0 zurückgegeben.
     return 0;
 }
+
+void *isr80h_command7_invoke_system_command(struct interrupt_frame * frame)
+{
+    return 0;
+}

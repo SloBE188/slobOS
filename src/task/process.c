@@ -508,6 +508,90 @@ void process_free(struct process *process, void* ptr)
 
 }
 
+//sets process arguments from the params into the process structure
+void process_get_arguments(struct process *process, int* argc, char** argv)
+{
+
+    *argc = process->arguments.argc;
+    *argv = process->arguments.argv;
+}
+
+//this function counts the arguments
+int process_count_command_arguments(struct command_argument *root_argument)
+{
+    struct command_argument *current = root_argument;
+    int i = 0;
+
+    //loops threw the linked list
+    while (current)
+    {   
+        i++;
+        current = current->next;
+    }
+
+    return i;
+    
+}
+
+
+//this function injects all the arguments (command_argument) in the linked list into the process
+int process_inject_arguments(struct process *process, struct command_argument *root_argument)
+{
+    int res = 0;
+    struct command_argument *current = root_argument;
+    int i = 0;
+    int argc = process_count_command_arguments(root_argument);      //counts how many arguments there are
+
+    if (argc == 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    char** argv = process_malloc(process, (sizeof(const char*) * argc));    //allocates memory in the process for the argv array
+    if (!argv)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
+
+
+    //in this while loop i go threw all the command arguments and allocate memory for them and move every single command argument in the
+    // "argv" pointer/array
+
+    /*here i loop threw the linked list of the command arguments and copy every argument into the process and add every single 
+    argument to the argv array*/
+    while (current)
+    {
+
+        //allocate memory für das aktuelle Argument
+        char *argument_str = process_malloc(process, sizeof(current->argument));
+        if (!argument_str)
+        {
+            res = -ENOMEM;
+            goto out;
+        }
+
+        //Kopiert das Argument in den reservierten Speicher
+        strncpy(argument_str, current->argument, sizeof(current->argument));
+        argv[i] = argument_str;
+        current = current->next;
+        i++;
+        
+    }
+
+
+    //weist die Argumente dem process (process structure) zu
+    process->arguments.argc = argc;
+    process->arguments.argv = argv;
+    
+    
+
+out:
+    return res;
+}
+
+
 
 //this function loads a process normal with the "process_load" function and then switches the process to the new loaded process
 int process_load_switch(const char *filename, struct process **process)

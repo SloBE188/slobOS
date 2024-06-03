@@ -11,7 +11,8 @@ enum SystemCommands
     SYSTEM_COMMAND3_PUTCHAR,     //eax 3
     SYSTEM_COMMAND4_MALLOC,      //eax 4
     SYSTEM_COMMAND5_FREE,            //eax 5
-    SYSTEM_COMMAND6_PROCESS_LOAD_FROM_SHELL     //eax 6
+    SYSTEM_COMMAND6_PROCESS_LOAD_FROM_SHELL,     //eax 6
+    SYSTEM_COMMAND7_INVOKE_SYSTEM_COMMAND                  //eax 7
 };
 
 #endif
