@@ -27,6 +27,7 @@ void slobos_free(void *ptr);
 int slobos_putchar(int c);
 void slobos_process_load_from_shell(const char *filename);
 void slobos_process_get_arguments(struct process_arguments *arguments);
+int slobos_system_command(struct command_argument *arguments);
 
 
 //Allgemein

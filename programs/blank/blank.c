@@ -8,7 +8,13 @@
 int main(int argc, char** argv)
 {
 
-    print(argv[0]);
+    //print(argv[0]);
+    for (int i = 0; i < argc; i++)
+    {
+        printf("%s\n", argv[i]);
+    }
+    
+
 
     /*truct process_arguments arguments;
     slobos_process_get_arguments(&arguments);

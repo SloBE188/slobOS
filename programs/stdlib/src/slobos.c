@@ -12,7 +12,7 @@ This function parses the given command arguments into diffrent command arguments
 struct command_argument* slobos_parse_command(const char *command, int max)
 {
     struct command_argument* root_command = 0;          //Die erste command_argument struktur
-    char scommand[1024];                                //temporärer buffer welcher dann "command" speichert
+    char scommand[1025];                                //temporärer buffer welcher dann "command" speichert
     if (max >= (int) sizeof(scommand))                  //check ob "max" grösser als der buffer ist (darf nicht)
     {
         return 0;
@@ -118,4 +118,19 @@ void slobos_terminal_readline(char* out, int size, bool output_while_typing)
 
     // Add the null terminator
     out[i] = 0x00;
+}
+
+
+int slobos_system_run(const char *command)
+{
+
+    char buf[1024];
+    strncpy(buf,command, sizeof(buf));          //copier the param "command" into the "buf" which is 1024 byte big
+    struct command_argument *root_command_argument = slobos_parse_command(buf, sizeof(buf));    //parses the command
+    if (!root_command_argument)
+    {
+        return -1;
+    }
+    
+    return slobos_system_command(root_command_argument);
 }

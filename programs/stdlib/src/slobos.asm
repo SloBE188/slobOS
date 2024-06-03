@@ -10,6 +10,7 @@ global slobos_free:function
 global slobos_putchar:function
 global slobos_process_load_from_shell:function
 global slobos_process_get_arguments:function
+global slobos_system_command:function
 
 
 ; void print(const char *message)
@@ -82,6 +83,18 @@ slobos_process_load_from_shell:
     pop ebp                     ;restore the base pointer
     ret                         ;returns
 
+
+
+; int slobos_system_command(struct command_argument *arguments)
+slobos_system_command:
+    push ebp
+    mov ebp,esp
+    mov eax, 7          ; Command 7 process_system_command ( runs a system command based on the arguments)
+    push dword[ebp+8]   ;variable "arguments"
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
 
 ;void slobos_process_get_arguments(struct process_arguments *arguments)
 slobos_process_get_arguments:
