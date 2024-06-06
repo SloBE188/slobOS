@@ -51,6 +51,7 @@ int task_free(struct task* task);
 
 int task_switch(struct task* task);
 int task_page();
+void task_next();
 
 void task_run_first_ever_task();
 

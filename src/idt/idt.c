@@ -4,6 +4,7 @@
 #include "io/io.h"
 #include "task/task.h"
 #include "status.h"
+#include "task/process.h"
 
 struct idt_desc idt_descriptors[SLOBOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
@@ -43,6 +44,12 @@ void no_interrupt_handler()
 void idt_zero()
 {
     print("Divide by zero error\n");
+}
+//exception handling
+void idt_handle_exception()
+{
+    process_terminate(task_current()->process);
+    task_next();
 }
 
 //funktion wird gebraucht, um die idt table mit den interrupts zu füllen. man muss der funktion die interrupt nummer und die adresse der zuständigen ISR mitliefern.
@@ -90,6 +97,14 @@ void idt_init()
 
     //Interrupt 0x80 (userland) get maped. So the isr80h_wrapper function gets called when interrupt (0x80) get called through userland
     idt_set(0x80, isr80h_wrapper);
+
+
+    //set the exception handling interrupts
+    for (int i = 0; i < 0x20; i++)
+    {
+        idt_register_interrupt_callback(i, idt_handle_exception);
+    }
+    
 
     //Load the interrupt descriptor table
     idt_load(&idtr_descriptor);
