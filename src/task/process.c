@@ -645,10 +645,9 @@ int process_free_program_data(struct process *process)
 
     case PROCESS_FILETYPE_BINARY:
         res = process_free_binary_data(process);
-    
+        break;
     default:
         res = -EINVARG;
-        break;
     }
 
     return res;
@@ -661,9 +660,9 @@ void process_switch_to_any()
 
     for (int i = 0; i < SLOBOS_MAX_PROCESSES; i++)
     {
-        if (process[i])
+        if (processes[i])
         {
-            process_switch(process[i]);
+            process_switch(processes[i]);
             return;
         }
     
