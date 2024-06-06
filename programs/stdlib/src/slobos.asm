@@ -11,6 +11,7 @@ global slobos_putchar:function
 global slobos_process_load_from_shell:function
 global slobos_process_get_arguments:function
 global slobos_system_command:function
+global slobos_exit:function
 
 
 ; void print(const char *message)
@@ -104,6 +105,14 @@ slobos_process_get_arguments:
     push dword[ebp+8]   ;variable arguments (struct process_arguments)
     int 0x80
     add esp, 4
+    pop ebp
+    ret
+
+slobos_exit:
+    push ebp
+    mov ebp, esp
+    mov eax, 9  ; Syscall 9, terminate the current process
+    int 0x80
     pop ebp
     ret
 
