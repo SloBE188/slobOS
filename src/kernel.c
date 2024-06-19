@@ -269,10 +269,10 @@ void kernel_main()
 
 
     struct process* process = 0;
-    int res = process_load_switch("0:/shell.elf", &process);
+    int res = process_load_switch("0:/blank.elf", &process);
     if (res != SLOBOS_ALL_OK)
     {
-        panic("Failed to load shell.elf\n");
+        panic("Failed to load blank.elf\n");
     }
 
 
@@ -285,8 +285,35 @@ void kernel_main()
     //inject the argument with the value  into the process
     process_inject_arguments(process, &argument);
 
+
+
+
+    res = process_load_switch("0:/blank.elf", &process);
+    if (res != SLOBOS_ALL_OK)
+    {
+        panic("Failed to load blank.elf\n");
+    }
+
+
+    //Create a argument with the value (argv) "Testing"
+  
+    strcpy(argument.argument, "MUAMUAMU");       //copy the string "Testing" into the before created "command_argument" structure
+    argument.next = 0x00;
+
+
+    //inject the argument with the value  into the process
+    process_inject_arguments(process, &argument);
+
     //switches to the first task in the linked list and executes it
     task_run_first_ever_task();
+
+
+
+
+
+    //switches to the first task in the linked list and executes it
+    task_run_first_ever_task();
+
 
     while(1) {}
 
