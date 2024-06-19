@@ -67,13 +67,13 @@ void idt_set(int interrupt_no, void* address)
 
 
 //timer interrupt (PIC Interrupt 0x20)
-void idt_clock()
+/*void idt_clock()
 {
     outb(0x20,0x20);
 
     //switch to the next task
     task_next();
-}
+}*/
 
 
 void idt_init()
@@ -115,7 +115,7 @@ void idt_init()
         idt_register_interrupt_callback(i, idt_handle_exception);
     }
 
-    idt_register_interrupt_callback(0x20, idt_clock);
+    //idt_register_interrupt_callback(0x20, idt_clock);
 
 
     //Load the interrupt descriptor table

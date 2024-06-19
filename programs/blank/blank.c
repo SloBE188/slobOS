@@ -7,15 +7,13 @@
 
 int main(int argc, char** argv)
 {
-    while (1)
+    //print all the process arguments in the argv array;
+    for (int i = 0; i < argc; i++)
     {
-
-        print(argv[0]);
+        printf("%s\n", argv[i]);
     }
-    return 0;
- 
     
-    //slobos_exit();
+    slobos_exit();
 
 
     /*truct process_arguments arguments;
