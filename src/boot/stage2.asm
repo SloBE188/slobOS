@@ -1,64 +1,30 @@
-ORG 0x7c00
+ORG 0x7E00
 [BITS 16]
 
 
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
 
-jmp short start
-nop
-
-
-; FAT16 Header
-OEMIdentifier           db 'SLOBOS  '   ;string must be 8 bits
-BytesPerSector          dw 0x200
-SectorsPerCluster       db 0x80
-ReservedSectors         dw 200
-FATCopies               db 0x02
-RootDirEntries          dw 0x40
-NumSectors              dw 0x00
-MediaType               db 0xF8
-SectorsPerFat           dw 0x100
-SectorsPerTrack         dw 0x20
-NumberOfHeads           dw 0x40
-HiddenSectors           dd 0x00
-SectorsBig              dd 0x773594
-
-; Extended BPB (Dos 4.0)
-DriveNumber             db 0x80
-WinNTBit                db 0x00
-Signature               db 0x29
-VolumeID                dd 0xD105
-VolumeIDString          db 'SLOBOS BOO'
-SystemIDString          db 'FAT16   '   ;string must be 8 bits
-
-
 start:
-    jmp 0:step2
-
-
-
-step2:
-    ;Hier werden nun die Segment register manuell gesetzt, dass sie nicht random vom BIOS gesetzt werden. 
-    ;Das SS muss anders gesetzt werden als die restlichen.
+    ; Set up segment registers
     cli ;Clear Interrupts
     mov ax, 0x00
     mov ds, ax
     mov es, ax
     mov ss, ax
-    mov sp, 0x7c00
+    mov sp, 0x7E00
     sti ;Enable Interrupts
 
-    ; VBE Modus setzen
-    ;mov ax, 0x4F02
-    ;mov bx, 0x17D
-    ;int 0x10
+    ; VBE mode setup (example, commented out)
+    ; mov ax, 0x4F02
+    ; mov bx, 0x117
+    ; int 0x10
 
-    ; VBE Modusinformationen abrufen
-    ;mov ax, 0x4F01
-    ;mov cx, 0x17D
-    ;lea di, mode_info
-    ;int 0x10
+    ; VBE mode info retrieval (example, commented out)
+    ; mov ax, 0x4F01
+    ; mov cx, 0x117
+    ; mov di, mode_info
+    ; int 0x10
 
 .load_protected:
     cli 
@@ -173,5 +139,4 @@ ata_lba_read:
     ;mode_info:
         ;resb 256   ; Reserviere 256 Bytes für Modusinformationen
 
-times 510- ($ - $$) db 0    ;Extends the File to 512 Bytes (1 Sector)
-dw 0xAA55       ;boot signature
+times 510-($-$$) db 0
