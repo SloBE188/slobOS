@@ -5,10 +5,10 @@ FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign
 all: ./bin/stage1.bin ./bin/stage2.bin ./bin/kernel.bin user_programs
 	rm -rf ./bin/os.bin
 
-	dd if=./bin/stage1.bin >> ./bin/boot.bin bs=512 count=1
-	dd if=./bin/stage2.bin >> ./bin/boot.bin bs=512 count=2
-	dd if=./bin/boot.bin of=./bin/os.bin bs=1024 count=2
-	dd if=/dev/zero bs=512 count=4 >> ./bin/os.bin
+	dd if=./bin/stage1.bin >> ./bin/boot.bin
+	dd if=./bin/stage2.bin >> ./bin/boot.bin
+	dd if=./bin/boot.bin of=./bin/os.bin
+	dd if=/dev/zero bs=512 count=5 >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 	dd if=/dev/zero bs=1048576 count=16 >> ./bin/os.bin
 	sudo mount -t vfat ./bin/os.bin /mnt/d

@@ -1,7 +1,6 @@
 ORG 0x7c00
 [BITS 16]
 
-
 jmp short start
 nop
 
@@ -30,50 +29,53 @@ SystemIDString          db 'FAT16   '   ;string must be 8 bits
 
 
 start:
-    cli                 ; Disable interrupts
-    xor ax, ax
+
+; RESET THE DISK
+; DL Register contains current drive as passed to us by bios
+; Won't bother checking status here waste of time its emulated
+mov ah, 0x00
+int 0x13
+
+; Segment where stage2 will load
+mov ax, 0x7e0
+mov es, ax
+
+; LOAD stage2 INTO MEMORY
+stage2_load:
+    mov ah, 0x02
+    mov al, 3
+    mov ch, 0
+    mov cl, 2
+    mov dh, 0
+    mov bx, 0x00
+    int 0x13
+    jc .problem
+
+    mov ax, 0x7e0
     mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov sp, 0x7c00
-    sti                 ; Enable interrupts
 
-    ; Load the second sector (Stage2 bootloader) into memory at 0x7E00
-    mov ah, 0x02        ; BIOS read sector function
-    mov al, 1           ; Number of sectors to read
-    mov ch, 0           ; Cylinder number (low byte)
-    mov cl, 2           ; Sector number (starts from 1)
-    mov dh, 0           ; Head number
-    mov dl, [DriveNumber]
-    mov bx, 0x7E00      ; Destination memory address
-    int 0x13            ; Call BIOS
-
-    ;jc error            ; Jump to error if carry flag is set
-    jmp 0x0000:0x7E00   ; Jump to Stage2 bootloader
-
-error:
-    mov si, error_message
+    ; jump to the stage2 bootloader
+    jmp 0x7e0:0x0000
+.problem:
+    mov si, problem_loading_stage2
     call print
-
-    jmp $               ; Infinite loop
+    jmp $
 
 print:
-    mov bx, 0
-.loop:
+    push ax
+    mov ah, 0eh
+.nextc:
     lodsb
     cmp al, 0
-    je .done
-    call print_char
-    jmp .loop
-.done:
-    ret
-
-print_char:
-    mov ah, 0eh
+    je .pdone
     int 0x10
+    jmp .nextc
+.pdone:
+    pop ax
     ret
 
-error_message: db 'Failed to load Sector', 0
 
-times 510- ($ - $$) db 0
-dw 0xAA55       ; Boot signature
+problem_loading_stage2: db 'issue loading the stage2 bootloader', 0
+
+TIMES 510-($-$$) db 0
+dw 0xAA55
