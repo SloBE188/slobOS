@@ -1,2 +1,0 @@
-Implement PS2 keyboard Driver
-Implement PS2 Mouse
