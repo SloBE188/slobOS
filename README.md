@@ -60,4 +60,4 @@ To build slobOS, follow these steps:
 3. Running Senob
    ```sh
    cd bin
-   qemu-system-x86 -chda os.bin
+   qemu-system-x86 -hda os.bin
