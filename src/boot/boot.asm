@@ -29,7 +29,7 @@ DriveNumber             db 0x80
 WinNTBit                db 0x00
 Signature               db 0x29
 VolumeID                dd 0xD105
-VolumeIDString          db 'SLOBOS BOO'
+VolumeIDString          db 'PEACHOS BOO'
 SystemIDString          db 'FAT16   '   ;string must be 8 bits
 
 
@@ -101,9 +101,9 @@ gdt_descriptor:
 
 [BITS 32]
 load32:
-    mov eax, 5          ; Der Sektor im Speicher, wovon ich den Kernel laden möchte (5 ist der neue Sektor)
-    mov ecx, 100        ; Totale Nummer von Sektoren, welche ich laden will.
-    mov edi, 0x0100000  ; Adresse, wohin ich die Sektoren laden will.
+    mov eax, 1          ;Der Sektor im Speicher, wovon ich den kernel laden möchte (0 ist der Bootsektor)
+    mov ecx, 100        ;Totale Nummer von Sektoren, welche ich laden will.
+    mov edi, 0x0100000  ;Adresse, wohin ich die Sektoren laden will.
     call ata_lba_read
     jmp CODE_SEG:0x0100000
 

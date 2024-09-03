@@ -2,18 +2,14 @@ FILES = ./build/kernel.asm.o ./build/kernel.o ./build/loader/formats/elf.o ./bui
 INCLUDES = -I./src
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
-all: ./bin/stage1.bin ./bin/stage2.bin ./bin/kernel.bin user_programs
+all: ./bin/boot.bin ./bin/kernel.bin user_programs
 	rm -rf ./bin/os.bin
-
-	dd if=./bin/stage1.bin >> ./bin/boot.bin
-	dd if=./bin/stage2.bin >> ./bin/boot.bin
-	dd if=./bin/boot.bin of=./bin/os.bin
-	dd if=/dev/zero bs=512 count=5 >> ./bin/os.bin
+	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 	dd if=/dev/zero bs=1048576 count=16 >> ./bin/os.bin
 	sudo mount -t vfat ./bin/os.bin /mnt/d
 	# Copy a file over
-	# sudo cp ./hello.txt /mnt/d
+	sudo cp ./hello.txt /mnt/d
 	sudo cp ./programs/blank/blank.elf /mnt/d
 	sudo cp ./programs/shell/shell.elf /mnt/d
 	sudo umount /mnt/d
@@ -21,11 +17,8 @@ all: ./bin/stage1.bin ./bin/stage2.bin ./bin/kernel.bin user_programs
 	i686-elf-ld -g -relocatable $(FILES) -o ./build/kernelfull.o
 	i686-elf-gcc $(FLAGS) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./build/kernelfull.o
 
-./bin/stage1.bin: ./src/boot/stage1.asm
-	nasm -f bin ./src/boot/stage1.asm -o ./bin/stage1.bin
-
-./bin/stage2.bin: ./src/boot/stage2.asm
-	nasm -f bin ./src/boot/stage2.asm -o ./bin/stage2.bin
+./bin/boot.bin: ./src/boot/boot.asm
+	nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
 
 ./build/kernel.asm.o: ./src/kernel.asm
 	nasm -f elf -g ./src/kernel.asm -o ./build/kernel.asm.o
